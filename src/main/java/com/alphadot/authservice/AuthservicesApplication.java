@@ -7,13 +7,13 @@ import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
 @SpringBootApplication
 @EntityScan(basePackageClasses = {
-		RfpintelsUserservicesApplication.class,
+		AuthservicesApplication.class,
         Jsr310JpaConverters.class
 })
-public class RfpintelsUserservicesApplication {
+public class AuthservicesApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RfpintelsUserservicesApplication.class, args);
+		SpringApplication.run(AuthservicesApplication.class, args);
 	}
 
 }

@@ -1,8 +1,8 @@
-package com.rfpintels.userservices;
+package com.authservices;
 
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RfpintelsUserservicesApplicationTests {
+class AuthservicesApplicationTests {
 
 }
