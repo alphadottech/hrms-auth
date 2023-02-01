@@ -48,7 +48,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserById(Long id) {
         Optional<User> dbUser = userRepository.findById(id);
         logger.info("Fetched user : " + dbUser + " by " + id);
-        return dbUser.map(CustomUserDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException("Couldn't find a matching user id in the database for " + id));
+        return dbUser.map(CustomUserDetails::new).orElseThrow(() -> new UsernameNotFoundException("Couldn't find a matching user id in the database for " + id));
+       // return dbUser.get();
     }
 }

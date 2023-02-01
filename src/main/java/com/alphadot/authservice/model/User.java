@@ -13,6 +13,7 @@
  */
 package com.alphadot.authservice.model;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,12 +32,14 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.NaturalId;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.alphadot.authservice.model.audit.DateAudit;
 import com.alphadot.authservice.validation.annotation.NullOrNotBlank;
 
 @Entity(name = "_USER")
-public class User extends DateAudit {
+public class User extends DateAudit implements UserDetails{
 
 	@Id
 	@Column(name = "USER_ID")
@@ -82,15 +85,17 @@ public class User extends DateAudit {
 	}
 
 	public User(User user) {
-		id = user.getId();
-		username = user.getUsername();
-		password = user.getPassword();
-		firstName = user.getFirstName();
-		lastName = user.getLastName();
-		email = user.getEmail();
-		active = user.getActive();
-		roles = user.getRoles();
-		isEmailVerified = user.getEmailVerified();
+		if(user!=null) {
+			id = user.getId();
+			username = user.getUsername();
+			password = user.getPassword();
+			firstName = user.getFirstName();
+			lastName = user.getLastName();
+			email = user.getEmail();
+			active = user.getActive();
+			roles = user.getRoles();
+			isEmailVerified = user.getEmailVerified();
+		}
 	}
 
 	public void addRole(Role role) {
@@ -188,5 +193,35 @@ public class User extends DateAudit {
 		return "User{" + "id=" + id + ", email='" + email + '\'' + ", username='" + username + '\'' + ", password='"
 				+ password + '\'' + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", active="
 				+ active + ", roles=" + roles + ", isEmailVerified=" + isEmailVerified + '}';
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
