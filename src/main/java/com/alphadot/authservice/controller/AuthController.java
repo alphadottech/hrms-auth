@@ -46,6 +46,7 @@ import com.alphadot.authservice.model.CustomUserDetails;
 import com.alphadot.authservice.model.payload.ApiResponse;
 import com.alphadot.authservice.model.payload.JwtAuthenticationResponse;
 import com.alphadot.authservice.model.payload.LoginRequest;
+import com.alphadot.authservice.model.payload.LoginResponse;
 import com.alphadot.authservice.model.payload.PasswordResetLinkRequest;
 import com.alphadot.authservice.model.payload.PasswordResetRequest;
 import com.alphadot.authservice.model.payload.RegistrationRequest;
@@ -114,8 +115,11 @@ public class AuthController {
 		return authService.createAndPersistRefreshTokenForDevice(authentication, loginRequest)
 				.map(RefreshToken::getToken).map(refreshToken -> {
 					String jwtToken = authService.generateToken(customUserDetails);
-					return ResponseEntity.ok(
-							new JwtAuthenticationResponse(jwtToken, refreshToken, tokenProvider.getExpiryDuration()));
+					JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse(jwtToken, refreshToken, tokenProvider.getExpiryDuration());
+					LoginResponse loginResponse = new LoginResponse();
+					loginResponse.setJwtAuthenticationResponse(jwtAuthenticationResponse);
+					loginResponse.setEmployeeId(customUserDetails.getId());
+					return ResponseEntity.ok(loginResponse);
 				})
 				.orElseThrow(() -> new UserLoginException("Couldn't create refresh token for: [" + loginRequest + "]"));
 	}
