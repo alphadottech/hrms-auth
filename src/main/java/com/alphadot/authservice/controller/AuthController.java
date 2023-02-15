@@ -19,6 +19,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -71,6 +72,13 @@ public class AuthController {
 
 	@Autowired
 	JwtTokenValidator jwtTokenValidator;
+	
+	@Value("${-Dmy.port}")
+	private String serverPort;
+
+	@Value("${-Dmy.property}")
+	private String ipaddress;
+
 
 	@Autowired
 	public AuthController(AuthService authService, JwtTokenProvider tokenProvider,
@@ -132,7 +140,15 @@ public class AuthController {
 	public ResponseEntity registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
 
 		return authService.registerUser(registrationRequest).map(user -> {
-			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.fromCurrentContextPath()
+			/*
+			 * UriComponentsBuilder urlBuilder =
+			 * ServletUriComponentsBuilder.fromCurrentContextPath()
+			 * .path("/api/auth/registrationConfirmation");
+			 */
+			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
+					.scheme("http")
+					.host(ipaddress)
+					.port(serverPort)
 					.path("/api/auth/registrationConfirmation");
 			OnUserRegistrationCompleteEvent onUserRegistrationCompleteEvent = new OnUserRegistrationCompleteEvent(user,
 					urlBuilder);
@@ -153,8 +169,16 @@ public class AuthController {
 	public ResponseEntity resetLink(@Valid @RequestBody PasswordResetLinkRequest passwordResetLinkRequest) {
 
 		return authService.generatePasswordResetToken(passwordResetLinkRequest).map(passwordResetToken -> {
-			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.fromCurrentContextPath()
-					.path("/password/reset");
+			/*
+			 * UriComponentsBuilder urlBuilder =
+			 * ServletUriComponentsBuilder.fromCurrentContextPath()
+			 * .path("/password/reset");
+			 */
+			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
+					.scheme("http")
+					.host(ipaddress)
+					.port(serverPort)
+					.path("/api/auth/password/reset");
 			OnGenerateResetLinkEvent generateResetLinkMailEvent = new OnGenerateResetLinkEvent(passwordResetToken,
 					urlBuilder);
 			applicationEventPublisher.publishEvent(generateResetLinkMailEvent);
@@ -207,7 +231,10 @@ public class AuthController {
 						"User is already registered. No need to re-generate token"));
 
 		return Optional.ofNullable(newEmailToken.getUser()).map(registeredUser -> {
-			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.fromCurrentContextPath()
+			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
+					.scheme("http")
+					.host(ipaddress)
+					.port(serverPort)
 					.path("/api/auth/registrationConfirmation");
 			OnRegenerateEmailVerificationEvent regenerateEmailVerificationEvent = new OnRegenerateEmailVerificationEvent(
 					registeredUser, urlBuilder, newEmailToken);
