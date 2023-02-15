@@ -19,25 +19,23 @@ import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-public class CustomUserDetails extends User implements UserDetails {
+public class CustomUserDetails extends User {
 
     public CustomUserDetails(final User user) {
         super(user);
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
-                .collect(Collectors.toList());
-    }
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getRole().name()))
+				.collect(Collectors.toList());
+	}
 
     @Override
-    public String getPassword() {
-        return super.getPassword();
-    }
+	public String getPassword() {
+		return super.getPassword();
+	}
 
     @Override
     public String getUsername() {

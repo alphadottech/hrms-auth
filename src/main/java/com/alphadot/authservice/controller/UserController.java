@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alphadot.authservice.annotation.CurrentUser;
 import com.alphadot.authservice.event.OnUserAccountChangeEvent;
 import com.alphadot.authservice.event.OnUserLogoutSuccessEvent;
 import com.alphadot.authservice.exception.UpdatePasswordException;
@@ -68,8 +67,10 @@ public class UserController {
 	 */
 	@GetMapping("/me")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity getUserProfile(@CurrentUser CustomUserDetails currentUser) {
-		logger.info(currentUser.getEmail() + " has role: " + currentUser.getRoles());
+	public ResponseEntity getUserProfile() {
+		CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
+		logger.info(customUserDetails.getUsername() + " has role: " + customUserDetails.getRoles());
 		return ResponseEntity.ok("Hello. This is about me");
 	}
 
@@ -88,9 +89,9 @@ public class UserController {
 	 */
 	@PostMapping("/password/update")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity updateUserPassword(@CurrentUser CustomUserDetails customUserDetails,
-			@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest) {
-
+	public ResponseEntity updateUserPassword(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest) {
+		CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
 		return authService.updatePassword(customUserDetails, updatePasswordRequest).map(updatedUser -> {
 			OnUserAccountChangeEvent onUserPasswordChangeEvent = new OnUserAccountChangeEvent(updatedUser,
 					"Update Password", "Change successful");
@@ -104,8 +105,9 @@ public class UserController {
 	 * with the user device.
 	 */
 	@PostMapping("/logout")
-	public ResponseEntity logoutUser(@CurrentUser CustomUserDetails customUserDetails,
-			@Valid @RequestBody LogOutRequest logOutRequest) {
+	public ResponseEntity logoutUser(@Valid @RequestBody LogOutRequest logOutRequest) {
+		CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+				.getPrincipal();
 		userService.logoutUser(customUserDetails, logOutRequest);
 		Object credentials = SecurityContextHolder.getContext().getAuthentication().getCredentials();
 
