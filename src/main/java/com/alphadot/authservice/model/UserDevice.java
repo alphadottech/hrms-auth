@@ -38,7 +38,7 @@ public class UserDevice extends DateAudit {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID", nullable = false)
+    @JoinColumn(name = "EMPLOYEE_ID", nullable = false)
     private User user;
 
     @Column(name = "DEVICE_TYPE")

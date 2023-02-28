@@ -1,9 +1,24 @@
 package com.alphadot.authservice.model.payload;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.alphadot.authservice.model.Role;
+
 public class LoginResponse {
 	private JwtAuthenticationResponse jwtAuthenticationResponse;
 
 	private Long employeeId;
+	
+	private Set<Role> roles = new HashSet<>();
+
+	public Set<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
 
 	public Long getEmployeeId() {
 		return employeeId;
