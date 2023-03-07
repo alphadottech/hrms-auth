@@ -15,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -26,12 +27,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.alphadot.authservice.model.audit.DateAudit;
 import com.alphadot.authservice.validation.annotation.NullOrNotBlank;
 
-@Entity(name = "_USER")
-@Proxy(lazy=false)
-public class User extends DateAudit implements UserDetails{
+@Table(catalog = "EmployeeDB", schema = "user_schema", name = "_EMPLOYEE")
+@Entity(name = "_EMPLOYEE")
+@Proxy(lazy = false)
+public class User extends DateAudit implements UserDetails {
 
 	@Id
-	@Column(name = "USER_ID")
+	@Column(name = "EMPLOYEE_ID")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
 	@SequenceGenerator(name = "user_seq", allocationSize = 1)
 	private Long id;
@@ -60,9 +62,9 @@ public class User extends DateAudit implements UserDetails{
 	@Column(name = "IS_ACTIVE", nullable = false)
 	private Boolean active;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE})
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })
 	@JoinTable(name = "USER_AUTHORITY", joinColumns = {
-			@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID") }, inverseJoinColumns = {
+			@JoinColumn(name = "EMPLOYEE_ID", referencedColumnName = "EMPLOYEE_ID") }, inverseJoinColumns = {
 					@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID") })
 	private Set<Role> roles = new HashSet<>();
 
@@ -74,7 +76,7 @@ public class User extends DateAudit implements UserDetails{
 	}
 
 	public User(User user) {
-		if(user!=null) {
+		if (user != null) {
 			id = user.getId();
 			username = user.getUsername();
 			password = user.getPassword();

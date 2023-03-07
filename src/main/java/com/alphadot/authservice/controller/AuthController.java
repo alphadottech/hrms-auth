@@ -14,6 +14,7 @@
 package com.alphadot.authservice.controller;
 
 import java.util.Optional;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -44,6 +45,7 @@ import com.alphadot.authservice.exception.TokenRefreshException;
 import com.alphadot.authservice.exception.UserLoginException;
 import com.alphadot.authservice.exception.UserRegistrationException;
 import com.alphadot.authservice.model.CustomUserDetails;
+import com.alphadot.authservice.model.Role;
 import com.alphadot.authservice.model.payload.ApiResponse;
 import com.alphadot.authservice.model.payload.JwtAuthenticationResponse;
 import com.alphadot.authservice.model.payload.LoginRequest;
@@ -127,6 +129,8 @@ public class AuthController {
 					LoginResponse loginResponse = new LoginResponse();
 					loginResponse.setJwtAuthenticationResponse(jwtAuthenticationResponse);
 					loginResponse.setEmployeeId(customUserDetails.getId());
+					Set<Role> roles = customUserDetails.getRoles();
+					loginResponse.setRoles(roles);
 					return ResponseEntity.ok(loginResponse);
 				})
 				.orElseThrow(() -> new UserLoginException("Couldn't create refresh token for: [" + loginRequest + "]"));

@@ -44,7 +44,7 @@ public class EmailVerificationToken extends DateAudit {
     private String token;
 
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "USER_ID")
+    @JoinColumn(nullable = false, name = "EMPLOYEE_ID")
     private User user;
 
     @Column(name = "TOKEN_STATUS")
