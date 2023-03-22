@@ -180,9 +180,11 @@ public class AuthController {
 			 */
 			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
 					.scheme("http")
-					.host(ipaddress)
-					.port(serverPort)
-					.path("/api/auth/password/reset");
+					.host("192.168.1.27")
+					.port("3000");
+//					.host(ipaddress)
+//					.port(serverPort)
+//					.path("/api/auth/password/reset");
 			OnGenerateResetLinkEvent generateResetLinkMailEvent = new OnGenerateResetLinkEvent(passwordResetToken,
 					urlBuilder);
 			applicationEventPublisher.publishEvent(generateResetLinkMailEvent);
