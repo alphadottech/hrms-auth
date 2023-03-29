@@ -80,6 +80,12 @@ public class AuthController {
 
 	@Value("${-Dmy.property}")
 	private String ipaddress;
+	
+	@Value("${-UI.port}")
+	private String uiPort;
+
+	@Value("${-UI.property}")
+	private String uiAddress;
 
 
 	@Autowired
@@ -180,8 +186,8 @@ public class AuthController {
 			 */
 			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
 					.scheme("http")
-					.host("192.168.1.29")
-					.port("3001")
+					.host(uiAddress)
+					.port(uiPort)
 					.path("/NewpassForm");
 			OnGenerateResetLinkEvent generateResetLinkMailEvent = new OnGenerateResetLinkEvent(passwordResetToken,
 					urlBuilder);
