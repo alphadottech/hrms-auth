@@ -13,6 +13,7 @@
  */
 package com.alphadot.authservice.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,8 @@ public class UserDeviceService {
     /**
      * Find the user device info by user id
      */
-    public Optional<UserDevice> findDeviceByUserId(Long userId, String deviceId) {
-        return userDeviceRepository.findByUserIdAndDeviceId(userId, deviceId);
+    public List<UserDevice> findDeviceByUserId(Long userId, String deviceId) {
+        return userDeviceRepository.findAllByUserIdAndDeviceId(userId, deviceId);
     }
 
     /**

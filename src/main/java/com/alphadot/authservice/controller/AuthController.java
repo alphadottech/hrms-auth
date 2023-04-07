@@ -267,7 +267,7 @@ public class AuthController {
 			return ResponseEntity
 					.ok(new JwtAuthenticationResponse(updatedToken, refreshToken, tokenProvider.getExpiryDuration()));
 		}).orElseThrow(() -> new TokenRefreshException(tokenRefreshRequest.getRefreshToken(),
-				"Unexpected error during token refresh. Please logout and login again."));
+				"Unexpected error during token refresh. Please ̥and login again."));
 	}
 
 }
