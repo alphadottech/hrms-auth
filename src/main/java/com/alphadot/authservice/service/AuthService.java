@@ -39,7 +39,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
@@ -196,9 +198,11 @@ public class AuthService {
         User currentUser = (User) authentication.getPrincipal();
         String deviceId = loginRequest.getDeviceInfo().getDeviceId();
         userDeviceService.findDeviceByUserId(currentUser.getId(), deviceId)
-                .map(UserDevice::getRefreshToken)
-                .map(RefreshToken::getId)
-                .ifPresent(refreshTokenService::deleteById);
+                				.stream() 
+                				.map(UserDevice::getRefreshToken)
+                				.map(RefreshToken::getId)
+                				.collect(Collectors.toList())
+                				.forEach(refreshTokenService::deleteById);
 
         UserDevice userDevice = userDeviceService.createUserDevice(loginRequest.getDeviceInfo());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken();

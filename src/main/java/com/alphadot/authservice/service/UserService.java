@@ -14,8 +14,10 @@
 package com.alphadot.authservice.service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,12 +131,18 @@ public class UserService {
 	 */
 	public void logoutUser(CustomUserDetails customUserDetails, LogOutRequest logOutRequest) {
 		String deviceId = logOutRequest.getDeviceInfo().getDeviceId();
-		UserDevice userDevice = userDeviceService.findDeviceByUserId(customUserDetails.getId(), deviceId)
-				.filter(device -> device.getDeviceId().equals(deviceId))
-				.orElseThrow(() -> new UserLogoutException(logOutRequest.getDeviceInfo().getDeviceId(),
+		List<UserDevice> userDeviceList = userDeviceService.findDeviceByUserId(customUserDetails.getId(), deviceId)
+											.stream()
+											.filter(device -> device.getDeviceId().equals(deviceId))
+											.collect(Collectors.toList());
+				
+		Optional.of(userDeviceList).		
+				orElseThrow(() -> new UserLogoutException(logOutRequest.getDeviceInfo().getDeviceId(),
 						"Invalid device Id supplied. No matching device found for the given user "));
 
-		logger.info("Removing refresh token associated with device [" + userDevice + "]");
-		refreshTokenService.deleteById(userDevice.getRefreshToken().getId());
+		userDeviceList.forEach(userDevice->{
+			logger.info("Removing refresh token associated with device [" + userDevice + "]");
+			refreshTokenService.deleteById(userDevice.getRefreshToken().getId());
+		});
 	}
 }
