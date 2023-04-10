@@ -13,6 +13,7 @@
  */
 package com.alphadot.authservice.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,5 +28,5 @@ public interface UserDeviceRepository extends JpaRepository<UserDevice, Long> {
 
     Optional<UserDevice> findByRefreshToken(RefreshToken refreshToken);
 
-    Optional<UserDevice> findByUserIdAndDeviceId(Long userId, String userDeviceId);
+    List<UserDevice> findAllByUserIdAndDeviceId(Long userId, String userDeviceId);
 }
