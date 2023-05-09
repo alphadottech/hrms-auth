@@ -13,6 +13,9 @@
  */
 package com.alphadot.authservice.controller;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
@@ -21,6 +24,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,10 +36,13 @@ import com.alphadot.authservice.event.OnUserAccountChangeEvent;
 import com.alphadot.authservice.event.OnUserLogoutSuccessEvent;
 import com.alphadot.authservice.exception.UpdatePasswordException;
 import com.alphadot.authservice.model.CustomUserDetails;
+import com.alphadot.authservice.model.Role;
+import com.alphadot.authservice.model.UriValidation;
 import com.alphadot.authservice.model.payload.ApiResponse;
 import com.alphadot.authservice.model.payload.LogOutRequest;
 import com.alphadot.authservice.model.payload.UpdatePasswordRequest;
 import com.alphadot.authservice.security.JwtTokenValidator;
+import com.alphadot.authservice.service.ApiValidationService;
 import com.alphadot.authservice.service.AuthService;
 import com.alphadot.authservice.service.UserService;
 
@@ -53,6 +60,9 @@ public class UserController {
 
 	@Autowired
 	JwtTokenValidator jwtTokenValidator;
+
+	@Autowired
+	private ApiValidationService apiValidationService;
 
 	@Autowired
 	public UserController(AuthService authService, UserService userService,
@@ -127,4 +137,16 @@ public class UserController {
 		return new ResponseEntity<String>("Success", HttpStatus.OK);
 	}
 
+	@PostMapping("/isapivalid")
+	public ResponseEntity<Boolean> checkURLAccess(@RequestBody UriValidation uriValidation) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+		long userID = customUserDetails.getId();
+		Set<Role> roles = customUserDetails.getRoles();
+		boolean result = apiValidationService.chechAccessablity(uriValidation, roles, userID);
+		if (result) {
+			return new ResponseEntity<Boolean>(result, HttpStatus.OK);
+		}
+		return new ResponseEntity<Boolean>(result, HttpStatus.UNAUTHORIZED);
+	}
 }
