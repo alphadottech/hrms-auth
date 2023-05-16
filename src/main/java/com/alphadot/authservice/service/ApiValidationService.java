@@ -1,23 +1,23 @@
 package com.alphadot.authservice.service;
 
-import com.alphadot.authservice.model.ApiInfo;
-import com.alphadot.authservice.model.Role;
-import com.alphadot.authservice.model.UriValidation;
-import com.alphadot.authservice.repository.ApiInfoRepository;
-import com.alphadot.authservice.util.WildCardEnum;
-import org.apache.commons.collections4.map.HashedMap;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.map.HashedMap;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.alphadot.authservice.model.ApiInfo;
+import com.alphadot.authservice.model.Role;
+import com.alphadot.authservice.model.UriValidation;
+import com.alphadot.authservice.repository.ApiInfoRepository;
+import com.alphadot.authservice.util.WildCardEnum;
 
 @Service
 public class ApiValidationService {
@@ -36,12 +36,8 @@ public class ApiValidationService {
         String url = getPartialUrl(uriValidation.getUri());
         logger.info("Requested url: " + url);
         List<String> requestUrlTokens = tokenize(url);
-        String query = "";
-        for (int i = 0; i < 6; i++) {
-            query = query + requestUrlTokens.get(i);
-        }
+        String query = getUrlWithoutQueryParam(requestUrlTokens);
         logger.info("Query for URL: " + query);
-
         String finalQuery = query;
         List<ApiInfo> listOfApi = roles.stream().flatMap(r -> r.getApiInfoSet().stream()).distinct().filter(A -> {
             String dbUrl = A.getUri();
@@ -55,7 +51,6 @@ public class ApiValidationService {
         logger.info("selected API from DB: " + listOfApi);
 
         boolean trigger = false;
-
         Map<String, Long> commingWildcards = new HashedMap<String, Long>();
         for (int i = 0; i < listOfApi.size(); i++) {
             List<String> dburlTokens = tokenize(listOfApi.get(i).getUri());
@@ -90,10 +85,23 @@ public class ApiValidationService {
         try {
             URL url = new URL(urlString);
             urlString = url.getFile().toString();
+           
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
         return urlString;
+    }
+    
+    private String getUrlWithoutQueryParam(List<String> requestUrlTokens) {
+        String query = "";
+        int maxSize=requestUrlTokens.size();
+        if(requestUrlTokens.size()>=6) {
+        	maxSize=6;
+        }
+        for (int i = 0; i < maxSize; i++) {
+        		query = query + requestUrlTokens.get(i);
+        }
+		return query;
     }
 
     private List<String> tokenize(String url) {
@@ -173,4 +181,5 @@ public class ApiValidationService {
     private String getValue(String s) {
         return s.substring(1, s.length() - 1);
     }
+    
 }
