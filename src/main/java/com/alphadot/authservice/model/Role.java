@@ -25,6 +25,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
 import org.hibernate.annotations.NaturalId;
@@ -51,6 +53,20 @@ public class Role {
 	@ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })
 	@JsonIgnore
 	private Set<User> userList = new HashSet<>();
+
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })
+	@JoinTable(name = "API_ROLE_MAPPING", joinColumns = {
+			@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID") }, inverseJoinColumns = {
+					@JoinColumn(name = "API_ID", referencedColumnName = "API_ID") })
+	private Set<ApiInfo> apiInfoSet = new HashSet<>();
+
+	public Set<ApiInfo> getApiInfoSet() {
+		return apiInfoSet;
+	}
+
+	public void setApiInfoSet(Set<ApiInfo> apiInfoSet) {
+		this.apiInfoSet = apiInfoSet;
+	}
 
 	public Role(RoleName role) {
 		this.role = role;
