@@ -16,7 +16,10 @@ package com.alphadot.authservice.security;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -50,24 +53,12 @@ public class JwtTokenProvider {
         Instant expiryDate = Instant.now().plusMillis(jwtExpirationInMs);
         String authorities = getUserAuthorities(customUserDetails);
         return Jwts.builder()
-                .setSubject(Long.toString(customUserDetails.getId()))
+        		.setId(UUID.randomUUID().toString())
+                .setSubject(customUserDetails.getEmail())
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(expiryDate))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .claim("id", customUserDetails.getId())
                 .claim(AUTHORITIES_CLAIM, authorities)
-                .compact();
-    }
-
-    /**
-     * Generates a token from a principal object. Embed the refresh token in the jwt
-     * so that a new jwt can be created
-     */
-    public String generateTokenFromUserId(Long userId) {
-        Instant expiryDate = Instant.now().plusMillis(jwtExpirationInMs);
-        return Jwts.builder()
-                .setSubject(Long.toString(userId))
-                .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(expiryDate))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
@@ -80,8 +71,8 @@ public class JwtTokenProvider {
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
-
-        return Long.parseLong(claims.getSubject());
+        String id = String.valueOf(claims.get("id"));
+        return Long.parseLong(id);
     }
 
     /**
