@@ -120,7 +120,6 @@ public class AuthController {
 	 */
 	@PostMapping("/login")
 	public ResponseEntity authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
 		Authentication authentication = authService.authenticateUser(loginRequest)
 				.orElseThrow(() -> new UserLoginException("Couldn't login user [" + loginRequest + "]"));
 
@@ -148,13 +147,7 @@ public class AuthController {
 	 */
 	@PostMapping("/register")
 	public ResponseEntity registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
-
 		return authService.registerUser(registrationRequest).map(user -> {
-			/*
-			 * UriComponentsBuilder urlBuilder =
-			 * ServletUriComponentsBuilder.fromCurrentContextPath()
-			 * .path("/api/auth/registrationConfirmation");
-			 */
 			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
 					.scheme("http")
 					.host(ipaddress)
@@ -177,13 +170,7 @@ public class AuthController {
 	 */
 	@PostMapping("/password/resetlink")
 	public ResponseEntity resetLink(@Valid @RequestBody PasswordResetLinkRequest passwordResetLinkRequest) {
-
 		return authService.generatePasswordResetToken(passwordResetLinkRequest).map(passwordResetToken -> {
-			/*
-			 * UriComponentsBuilder urlBuilder =
-			 * ServletUriComponentsBuilder.fromCurrentContextPath()
-			 * .path("/password/reset");
-			 */
 			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
 					.scheme("http")
 					.host(uiAddress)
@@ -204,7 +191,6 @@ public class AuthController {
 
 	@PostMapping("/password/reset")
 	public ResponseEntity resetPassword(@Valid @RequestBody PasswordResetRequest passwordResetRequest) {
-
 		return authService.resetPassword(passwordResetRequest).map(changedUser -> {
 			OnUserAccountChangeEvent onPasswordChangeEvent = new OnUserAccountChangeEvent(changedUser, "Reset Password",
 					"Changed Successfully");
@@ -220,7 +206,6 @@ public class AuthController {
 	 */
 	@GetMapping("/registrationConfirmation")
 	public ResponseEntity confirmRegistration(@RequestParam("token") String token) {
-
 		return authService.confirmEmailRegistration(token)
 				.map(user -> ResponseEntity.ok(new ApiResponse(true, "User verified successfully")))
 				.orElseThrow(() -> new InvalidTokenRequestException("Email Verification Token", token,
@@ -235,7 +220,6 @@ public class AuthController {
 	 */
 	@GetMapping("/resendRegistrationToken")
 	public ResponseEntity resendRegistrationToken(@RequestParam("token") String existingToken) {
-
 		EmailVerificationToken newEmailToken = authService.recreateRegistrationToken(existingToken)
 				.orElseThrow(() -> new InvalidTokenRequestException("Email Verification Token", existingToken,
 						"User is already registered. No need to re-generate token"));
@@ -260,7 +244,6 @@ public class AuthController {
 	 */
 	@PostMapping("/refresh")
 	public ResponseEntity refreshJwtToken(@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
-
 		return authService.refreshJwtToken(tokenRefreshRequest).map(updatedToken -> {
 			String refreshToken = tokenRefreshRequest.getRefreshToken();
 			logger.info("Created new Jwt Auth token: " + updatedToken);

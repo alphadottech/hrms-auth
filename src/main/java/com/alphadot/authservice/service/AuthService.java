@@ -13,6 +13,17 @@
  */
 package com.alphadot.authservice.service;
 
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.alphadot.authservice.exception.PasswordResetLinkException;
 import com.alphadot.authservice.exception.ResourceAlreadyInUseException;
 import com.alphadot.authservice.exception.ResourceNotFoundException;
@@ -31,17 +42,6 @@ import com.alphadot.authservice.model.payload.UpdatePasswordRequest;
 import com.alphadot.authservice.model.token.EmailVerificationToken;
 import com.alphadot.authservice.model.token.RefreshToken;
 import com.alphadot.authservice.security.JwtTokenProvider;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
@@ -183,13 +183,6 @@ public class AuthService {
     }
 
     /**
-     * Generates a JWT token for the validated client by userId
-     */
-    private String generateTokenFromUserId(Long userId) {
-        return tokenProvider.generateTokenFromUserId(userId);
-    }
-
-    /**
      * Creates and persists the refresh token for the user device. If device exists
      * already, we recreate the refresh token. Unused devices with expired tokens
      * should be cleaned externally.
@@ -221,7 +214,6 @@ public class AuthService {
      */
     public Optional<String> refreshJwtToken(TokenRefreshRequest tokenRefreshRequest) {
         String requestRefreshToken = tokenRefreshRequest.getRefreshToken();
-
         return Optional.of(refreshTokenService.findByToken(requestRefreshToken)
                 .map(refreshToken -> {
                     refreshTokenService.verifyExpiration(refreshToken);
@@ -256,7 +248,6 @@ public class AuthService {
     public Optional<User> resetPassword(PasswordResetRequest request) {
         PasswordResetToken token = passwordResetService.getValidToken(request);
         final String encodedPassword = passwordEncoder.encode(request.getConfirmPassword());
-
         return Optional.of(token)
                 .map(passwordResetService::claimToken)
                 .map(PasswordResetToken::getUser)
