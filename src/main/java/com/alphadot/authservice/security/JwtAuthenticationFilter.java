@@ -21,7 +21,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,7 +37,7 @@ import com.alphadot.authservice.service.CustomUserDetailsService;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-	private static final Logger log = Logger.getLogger(JwtAuthenticationFilter.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
 	@Value("${app.jwt.header}")
 	private String tokenRequestHeader;
@@ -71,7 +72,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			}
 		} catch (Exception ex) {
-			log.error("Failed to set user authentication in security context: ", ex);
+			LOGGER.error("Failed to set user authentication in security context: ", ex);
 			throw ex;
 		}
 
@@ -84,7 +85,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private String getJwtFromRequest(HttpServletRequest request) {
 		String bearerToken = request.getHeader(tokenRequestHeader);
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(tokenRequestHeaderPrefix)) {
-			log.info("Extracted Token: " + bearerToken);
+			LOGGER.info("Extracted Token: " + bearerToken);
 			return bearerToken.replace(tokenRequestHeaderPrefix, "");
 		}
 		return null;

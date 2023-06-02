@@ -18,7 +18,9 @@ import java.util.Set;
 
 import javax.validation.Valid;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -64,7 +66,7 @@ import com.alphadot.authservice.service.AuthService;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-	private static final Logger logger = Logger.getLogger(AuthController.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 	private final AuthService authService;
 	private final JwtTokenProvider tokenProvider;
 	private final ApplicationEventPublisher applicationEventPublisher;
@@ -124,7 +126,7 @@ public class AuthController {
 				.orElseThrow(() -> new UserLoginException("Couldn't login user [" + loginRequest + "]"));
 
 		CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-		logger.info("Logged in User returned [API]: " + customUserDetails.getUsername());
+		LOGGER.info("Logged in User returned [API]: " + customUserDetails.getUsername());
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		return authService.createAndPersistRefreshTokenForDevice(authentication, loginRequest)
@@ -156,7 +158,7 @@ public class AuthController {
 			OnUserRegistrationCompleteEvent onUserRegistrationCompleteEvent = new OnUserRegistrationCompleteEvent(user,
 					urlBuilder);
 			applicationEventPublisher.publishEvent(onUserRegistrationCompleteEvent);
-			logger.info("Registered User returned [API[: " + user);
+			LOGGER.info("Registered User returned [API[: " + user);
 			return ResponseEntity
 					.ok(new ApiResponse(true, "User registered successfully. Check your email for verification"));
 		}).orElseThrow(
@@ -246,7 +248,7 @@ public class AuthController {
 	public ResponseEntity refreshJwtToken(@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
 		return authService.refreshJwtToken(tokenRefreshRequest).map(updatedToken -> {
 			String refreshToken = tokenRefreshRequest.getRefreshToken();
-			logger.info("Created new Jwt Auth token: " + updatedToken);
+			LOGGER.info("Created new Jwt Auth token: " + updatedToken);
 			return ResponseEntity
 					.ok(new JwtAuthenticationResponse(updatedToken, refreshToken, tokenProvider.getExpiryDuration()));
 		}).orElseThrow(() -> new TokenRefreshException(tokenRefreshRequest.getRefreshToken(),

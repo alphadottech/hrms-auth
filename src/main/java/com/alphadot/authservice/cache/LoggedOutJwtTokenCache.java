@@ -13,17 +13,20 @@
  */
 package com.alphadot.authservice.cache;
 
-import com.alphadot.authservice.event.OnUserLogoutSuccessEvent;
-import com.alphadot.authservice.security.JwtTokenProvider;
-import net.jodah.expiringmap.ExpiringMap;
-import org.apache.log4j.Logger;
+import java.time.Instant;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import com.alphadot.authservice.event.OnUserLogoutSuccessEvent;
+import com.alphadot.authservice.security.JwtTokenProvider;
+
+import net.jodah.expiringmap.ExpiringMap;
 
 /**
  * This cache helps maintain a state to invalidate tokens post a successful logout operation.
@@ -37,8 +40,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class LoggedOutJwtTokenCache {
 
-    private static final Logger logger = Logger.getLogger(LoggedOutJwtTokenCache.class);
-
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final ExpiringMap<String, OnUserLogoutSuccessEvent> tokenEventMap;
     private final JwtTokenProvider tokenProvider;
 
@@ -54,12 +56,12 @@ public class LoggedOutJwtTokenCache {
     public void markLogoutEventForToken(OnUserLogoutSuccessEvent event) {
         String token = event.getToken();
         if (tokenEventMap.containsKey(token)) {
-            logger.info(String.format("Log out token for user [%s] is already present in the cache", event.getUserEmail()));
+            LOGGER.info(String.format("Log out token for user [%s] is already present in the cache", event.getUserEmail()));
 
         } else {
             Date tokenExpiryDate = tokenProvider.getTokenExpiryFromJWT(token);
             long ttlForToken = getTTLForToken(tokenExpiryDate);
-            logger.info(String.format("Logout token cache set for [%s] with a TTL of [%s] seconds. Token is due expiry at [%s]", event.getUserEmail(), ttlForToken, tokenExpiryDate));
+            LOGGER.info(String.format("Logout token cache set for [%s] with a TTL of [%s] seconds. Token is due expiry at [%s]", event.getUserEmail(), ttlForToken, tokenExpiryDate));
             tokenEventMap.put(token, event, ttlForToken, TimeUnit.SECONDS);
         }
     }

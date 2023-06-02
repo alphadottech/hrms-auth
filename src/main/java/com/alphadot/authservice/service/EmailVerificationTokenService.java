@@ -18,7 +18,7 @@ import com.alphadot.authservice.model.TokenStatus;
 import com.alphadot.authservice.model.User;
 import com.alphadot.authservice.model.token.EmailVerificationToken;
 import com.alphadot.authservice.repository.EmailVerificationTokenRepository;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ import java.util.UUID;
 @Service
 public class EmailVerificationTokenService {
 
-    private static final Logger logger = Logger.getLogger(EmailVerificationTokenService.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     @Value("${app.token.email.verification.duration}")
     private Long emailVerificationTokenExpiryDuration;
@@ -50,7 +50,7 @@ public class EmailVerificationTokenService {
         emailVerificationToken.setTokenStatus(TokenStatus.STATUS_PENDING);
         emailVerificationToken.setUser(user);
         emailVerificationToken.setExpiryDate(Instant.now().plusMillis(emailVerificationTokenExpiryDuration));
-        logger.info("Generated Email verification token [" + emailVerificationToken + "]");
+        LOGGER.info("Generated Email verification token [" + emailVerificationToken + "]");
         emailVerificationTokenRepository.save(emailVerificationToken);
     }
 
@@ -60,7 +60,7 @@ public class EmailVerificationTokenService {
     public EmailVerificationToken updateExistingTokenWithNameAndExpiry(EmailVerificationToken existingToken) {
         existingToken.setTokenStatus(TokenStatus.STATUS_PENDING);
         existingToken.setExpiryDate(Instant.now().plusMillis(emailVerificationTokenExpiryDuration));
-        logger.info("Updated Email verification token [" + existingToken + "]");
+        LOGGER.info("Updated Email verification token [" + existingToken + "]");
         return save(existingToken);
     }
 

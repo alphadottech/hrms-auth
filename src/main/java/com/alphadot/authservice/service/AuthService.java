@@ -16,7 +16,7 @@ package com.alphadot.authservice.service;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -46,7 +46,7 @@ import com.alphadot.authservice.security.JwtTokenProvider;
 @Service
 public class AuthService {
 
-    private static final Logger logger = Logger.getLogger(AuthService.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final UserService userService;
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenService refreshTokenService;
@@ -76,10 +76,10 @@ public class AuthService {
     public Optional<User> registerUser(RegistrationRequest newRegistrationRequest) {
         String newRegistrationRequestEmail = newRegistrationRequest.getEmail();
         if (emailAlreadyExists(newRegistrationRequestEmail)) {
-            logger.error("Email already exists: " + newRegistrationRequestEmail);
+        	LOGGER.error("Email already exists: " + newRegistrationRequestEmail);
             throw new ResourceAlreadyInUseException("Email", "Address", newRegistrationRequestEmail);
         }
-        logger.info("Trying to register new user [" + newRegistrationRequestEmail + "]");
+        LOGGER.info("Trying to register new user [" + newRegistrationRequestEmail + "]");
         User newUser = userService.createUser(newRegistrationRequest);
         User registeredNewUser = userService.save(newUser);
         return Optional.ofNullable(registeredNewUser);
@@ -121,7 +121,7 @@ public class AuthService {
 
         User registeredUser = emailVerificationToken.getUser();
         if (registeredUser.getEmailVerified()) {
-            logger.info("User [" + emailToken + "] already registered.");
+        	LOGGER.info("User [" + emailToken + "] already registered.");
             return Optional.of(registeredUser);
         }
 
@@ -166,7 +166,7 @@ public class AuthService {
                 .orElseThrow(() -> new UpdatePasswordException(email, "No matching user found"));
 
         if (!currentPasswordMatches(currentUser, updatePasswordRequest.getOldPassword())) {
-            logger.info("Current password is invalid for [" + currentUser.getPassword() + "]");
+        	LOGGER.info("Current password is invalid for [" + currentUser.getPassword() + "]");
             throw new UpdatePasswordException(currentUser.getEmail(), "Invalid current password");
         }
         String newPassword = passwordEncoder.encode(updatePasswordRequest.getNewPassword());
