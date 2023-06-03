@@ -19,7 +19,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ import com.alphadot.authservice.repository.UserRepository;
 @Service
 public class UserService {
 
-	private static final Logger logger = Logger.getLogger(UserService.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 	private final PasswordEncoder passwordEncoder;
 	private final UserRepository userRepository;
 	private final RoleService roleService;
@@ -120,7 +121,7 @@ public class UserService {
 		if (!isToBeMadeAdmin) {
 			newUserRoles.removeIf(Role::isAdminRole);
 		}
-		logger.info("Setting user roles: " + newUserRoles);
+		LOGGER.info("Setting user roles: " + newUserRoles);
 		return newUserRoles;
 	}
 
@@ -141,7 +142,7 @@ public class UserService {
 						"Invalid device Id supplied. No matching device found for the given user "));
 
 		userDeviceList.forEach(userDevice->{
-			logger.info("Removing refresh token associated with device [" + userDevice + "]");
+			LOGGER.info("Removing refresh token associated with device [" + userDevice + "]");
 			refreshTokenService.deleteById(userDevice.getRefreshToken().getId());
 		});
 	}

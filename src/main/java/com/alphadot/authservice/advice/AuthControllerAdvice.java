@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -52,8 +53,7 @@ import com.alphadot.authservice.model.payload.ApiResponse;
 @RestControllerAdvice
 public class AuthControllerAdvice {
 
-    private static final Logger logger = Logger.getLogger(AuthControllerAdvice.class);
-
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());    
     private final MessageSource messageSource;
 
     @Autowired
@@ -92,7 +92,7 @@ public class AuthControllerAdvice {
     private String resolveLocalizedErrorMessage(ObjectError objectError) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         String localizedErrorMessage = messageSource.getMessage(objectError, currentLocale);
-        logger.info(localizedErrorMessage);
+        LOGGER.info(localizedErrorMessage);
         return localizedErrorMessage;
     }
 

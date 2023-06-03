@@ -17,7 +17,8 @@ import java.io.IOException;
 
 import javax.mail.MessagingException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
@@ -34,7 +35,7 @@ import freemarker.template.TemplateException;
 @Component
 public class OnRegenerateEmailVerificationListener implements ApplicationListener<OnRegenerateEmailVerificationEvent> {
 
-    private static final Logger logger = Logger.getLogger(OnRegenerateEmailVerificationListener.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final MailService mailService;
 
     @Autowired
@@ -64,7 +65,7 @@ public class OnRegenerateEmailVerificationListener implements ApplicationListene
         try {
             mailService.sendEmailVerification(emailConfirmationUrl, recipientAddress);
         } catch (IOException | TemplateException | MessagingException e) {
-            logger.error(e);
+            LOGGER.error("Exception: {}",e);
             throw new MailSendException(recipientAddress, "Email Verification");
         }
     }

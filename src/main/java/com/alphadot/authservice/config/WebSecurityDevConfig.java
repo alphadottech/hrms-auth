@@ -13,7 +13,7 @@
  */
 package com.alphadot.authservice.config;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,10 +46,8 @@ import com.alphadot.authservice.service.CustomUserDetailsService;
         prePostEnabled = true)
 public class WebSecurityDevConfig extends WebSecurityConfigurerAdapter {
 
-    private static final Logger logger = Logger.getLogger(WebSecurityDevConfig.class);
-
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final CustomUserDetailsService userDetailsService;
-
     private final JwtAuthenticationEntryPoint jwtEntryPoint;
 
     @Autowired

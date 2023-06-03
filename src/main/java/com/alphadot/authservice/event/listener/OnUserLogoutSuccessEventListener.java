@@ -13,19 +13,21 @@
  */
 package com.alphadot.authservice.event.listener;
 
-import com.alphadot.authservice.cache.LoggedOutJwtTokenCache;
-import com.alphadot.authservice.event.OnUserLogoutSuccessEvent;
-import com.alphadot.authservice.model.payload.DeviceInfo;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
+import com.alphadot.authservice.cache.LoggedOutJwtTokenCache;
+import com.alphadot.authservice.event.OnUserLogoutSuccessEvent;
+import com.alphadot.authservice.model.payload.DeviceInfo;
+
 @Component
 public class OnUserLogoutSuccessEventListener implements ApplicationListener<OnUserLogoutSuccessEvent> {
 
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final LoggedOutJwtTokenCache tokenCache;
-    private static final Logger logger = Logger.getLogger(OnUserLogoutSuccessEventListener.class);
 
     @Autowired
     public OnUserLogoutSuccessEventListener(LoggedOutJwtTokenCache tokenCache) {
@@ -35,7 +37,7 @@ public class OnUserLogoutSuccessEventListener implements ApplicationListener<OnU
     public void onApplicationEvent(OnUserLogoutSuccessEvent event) {
         if (null != event) {
             DeviceInfo deviceInfo = event.getLogOutRequest().getDeviceInfo();
-            logger.info(String.format("Log out success event received for user [%s] for device [%s]", event.getUserEmail(), deviceInfo));
+            LOGGER.info(String.format("Log out success event received for user [%s] for device [%s]", event.getUserEmail(), deviceInfo));
             tokenCache.markLogoutEventForToken(event);
         }
     }
