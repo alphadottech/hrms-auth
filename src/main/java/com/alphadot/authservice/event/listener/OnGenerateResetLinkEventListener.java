@@ -13,59 +13,61 @@
  */
 package com.alphadot.authservice.event.listener;
 
-import com.alphadot.authservice.event.OnGenerateResetLinkEvent;
-import com.alphadot.authservice.exception.MailSendException;
-import com.alphadot.authservice.model.PasswordResetToken;
-import com.alphadot.authservice.model.User;
-import com.alphadot.authservice.service.MailService;
-import freemarker.template.TemplateException;
-import org.apache.log4j.Logger;
+import java.io.IOException;
+
+import javax.mail.MessagingException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import javax.mail.MessagingException;
-import java.io.IOException;
+import com.alphadot.authservice.event.OnGenerateResetLinkEvent;
+import com.alphadot.authservice.exception.MailSendException;
+import com.alphadot.authservice.model.PasswordResetToken;
+import com.alphadot.authservice.model.User;
+import com.alphadot.authservice.service.MailService;
+
+import freemarker.template.TemplateException;
 
 @Component
 public class OnGenerateResetLinkEventListener implements ApplicationListener<OnGenerateResetLinkEvent> {
 
-    private static final Logger logger = Logger.getLogger(OnGenerateResetLinkEventListener.class);
-    private final MailService mailService;
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+	private final MailService mailService;
 
-    @Autowired
-    public OnGenerateResetLinkEventListener(MailService mailService) {
-        this.mailService = mailService;
-    }
+	@Autowired
+	public OnGenerateResetLinkEventListener(MailService mailService) {
+		this.mailService = mailService;
+	}
 
-    /**
-     * As soon as a forgot password link is clicked and a valid email id is entered,
-     * Reset password link will be sent to respective mail via this event
-     */
-    @Override
-    @Async
-    public void onApplicationEvent(OnGenerateResetLinkEvent onGenerateResetLinkMailEvent) {
-        sendResetLink(onGenerateResetLinkMailEvent);
-    }
+	/**
+	 * As soon as a forgot password link is clicked and a valid email id is entered,
+	 * Reset password link will be sent to respective mail via this event
+	 */
+	@Override
+	@Async
+	public void onApplicationEvent(OnGenerateResetLinkEvent onGenerateResetLinkMailEvent) {
+		sendResetLink(onGenerateResetLinkMailEvent);
+	}
 
-    /**
-     * Sends Reset Link to the mail address with a password reset link token
-     */
-    private void sendResetLink(OnGenerateResetLinkEvent event) {
-        PasswordResetToken passwordResetToken = event.getPasswordResetToken();
-        User user = passwordResetToken.getUser();
-        String recipientAddress = user.getEmail();
-        String emailConfirmationUrl = event.getRedirectUrl().queryParam("token", passwordResetToken.getToken()).queryParam("email", recipientAddress)
-        		  .toUriString();
-      //  String emailConfirmationUrl = event.getRedirectUrl().queryParam("token", passwordResetToken.getToken())
-             
-        try {
-            mailService.sendResetLink(emailConfirmationUrl, recipientAddress);
-        } catch (IOException | TemplateException | MessagingException e) {
-            logger.error(e);
-            throw new MailSendException(recipientAddress, "Email Verification");
-        }
-    }
+	/**
+	 * Sends Reset Link to the mail address with a password reset link token
+	 */
+	private void sendResetLink(OnGenerateResetLinkEvent event) {
+		PasswordResetToken passwordResetToken = event.getPasswordResetToken();
+		User user = passwordResetToken.getUser();
+		String recipientAddress = user.getEmail();
+		String emailConfirmationUrl = event.getRedirectUrl().queryParam("token", passwordResetToken.getToken())
+				.queryParam("email", recipientAddress).toUriString();
+		try {
+			mailService.sendResetLink(emailConfirmationUrl, recipientAddress);
+		} catch (IOException | TemplateException | MessagingException e) {
+			LOGGER.error("exception: {}", e);
+			throw new MailSendException(recipientAddress, "Email Verification");
+		}
+	}
 
 }

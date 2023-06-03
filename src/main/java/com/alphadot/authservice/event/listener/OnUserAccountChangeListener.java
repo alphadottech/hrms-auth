@@ -17,7 +17,8 @@ import java.io.IOException;
 
 import javax.mail.MessagingException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
@@ -33,7 +34,7 @@ import freemarker.template.TemplateException;
 @Component
 public class OnUserAccountChangeListener implements ApplicationListener<OnUserAccountChangeEvent> {
 
-    private static final Logger logger = Logger.getLogger(OnUserAccountChangeListener.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final MailService mailService;
 
     @Autowired
@@ -63,7 +64,7 @@ public class OnUserAccountChangeListener implements ApplicationListener<OnUserAc
         try {
             mailService.sendAccountChangeEmail(action, actionStatus, recipientAddress);
         } catch (IOException | TemplateException | MessagingException e) {
-            logger.error(e);
+            LOGGER.error("Exception: {}",e);
             throw new MailSendException(recipientAddress, "Account Change Mail");
         }
     }

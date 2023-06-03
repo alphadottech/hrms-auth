@@ -15,7 +15,7 @@ package com.alphadot.authservice.controller;
 
 import javax.validation.Valid;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -43,12 +43,9 @@ import com.alphadot.authservice.service.UserService;
 @RequestMapping("/api/user")
 public class UserController {
 
-	private static final Logger logger = Logger.getLogger(UserController.class);
-
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 	private final AuthService authService;
-
 	private final UserService userService;
-
 	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Autowired
@@ -70,7 +67,7 @@ public class UserController {
 	public ResponseEntity getUserProfile() {
 		CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
-		logger.info(customUserDetails.getUsername() + " has role: " + customUserDetails.getRoles());
+		LOGGER.info(customUserDetails.getUsername() + " has role: " + customUserDetails.getRoles());
 		return ResponseEntity.ok("Hello. This is about me");
 	}
 
@@ -80,7 +77,7 @@ public class UserController {
 	@GetMapping("/admins")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity getAllAdmins() {
-		logger.info("Inside secured resource with admin");
+		LOGGER.info("Inside secured resource with admin");
 		return ResponseEntity.ok("Hello. This is about admins");
 	}
 
