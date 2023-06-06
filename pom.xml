@@ -9,11 +9,11 @@
 		<version>2.7.7</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.alphadot</groupId>
+	<groupId>com.adt</groupId>
 	<artifactId>authservice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>authservice</name>
-	<description>Authentication service</description>
+	<description>authentication service</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
