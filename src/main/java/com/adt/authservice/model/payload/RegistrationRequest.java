@@ -28,15 +28,11 @@ public class RegistrationRequest {
     @NotNull(message = "Registration password cannot be null")
     private String password;
 
-    @NotNull(message = "Specify whether the user has to be registered as an admin or not")
-    private Boolean registerAsAdmin;
-
     public RegistrationRequest(String username, String email,
-                               String password, Boolean registerAsAdmin) {
+                               String password) {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.registerAsAdmin = registerAsAdmin;
     }
 
     public RegistrationRequest() {
@@ -66,11 +62,4 @@ public class RegistrationRequest {
         this.password = password;
     }
 
-    public Boolean getRegisterAsAdmin() {
-        return registerAsAdmin;
-    }
-
-    public void setRegisterAsAdmin(Boolean registerAsAdmin) {
-        this.registerAsAdmin = registerAsAdmin;
-    }
 }
