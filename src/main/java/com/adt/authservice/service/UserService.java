@@ -101,11 +101,10 @@ public class UserService {
 	 */
 	public User createUser(RegistrationRequest registerRequest) {
 		User newUser = new User();
-		Boolean isNewUserAsAdmin = registerRequest.getRegisterAsAdmin();
 		newUser.setEmail(registerRequest.getEmail());
 		newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 		newUser.setUsername(registerRequest.getUsername());
-		newUser.addRoles(getRolesForNewUser(isNewUserAsAdmin));
+		newUser.addRoles(getRolesForNewUser(false));
 		newUser.setActive(true);
 		newUser.setEmailVerified(false);
 		return newUser;
