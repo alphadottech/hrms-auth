@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -148,6 +149,7 @@ public class AuthController {
 	 * publish an event to generate email verification token
 	 */
 	@PostMapping("/register")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
 		return authService.registerUser(registrationRequest).map(user -> {
 			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
@@ -160,7 +162,7 @@ public class AuthController {
 			applicationEventPublisher.publishEvent(onUserRegistrationCompleteEvent);
 			LOGGER.info("Registered User returned [API[: " + user);
 			return ResponseEntity
-					.ok(new ApiResponse(true, "User registered successfully. Check your email for verification"));
+					.ok(new ApiResponse(true, "The user has been successfully registered, and a verification email has been sent to the user. For inquiries related to other roles, please reach out to the administrator."));
 		}).orElseThrow(
 				() -> new UserRegistrationException(registrationRequest.getEmail(), "Missing user object in database"));
 	}
