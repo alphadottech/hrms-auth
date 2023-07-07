@@ -30,6 +30,7 @@ import com.adt.authservice.exception.ResourceNotFoundException;
 import com.adt.authservice.exception.TokenRefreshException;
 import com.adt.authservice.exception.UpdatePasswordException;
 import com.adt.authservice.model.CustomUserDetails;
+import com.adt.authservice.model.LeaveModel;
 import com.adt.authservice.model.PasswordResetToken;
 import com.adt.authservice.model.User;
 import com.adt.authservice.model.UserDevice;
@@ -41,6 +42,7 @@ import com.adt.authservice.model.payload.TokenRefreshRequest;
 import com.adt.authservice.model.payload.UpdatePasswordRequest;
 import com.adt.authservice.model.token.EmailVerificationToken;
 import com.adt.authservice.model.token.RefreshToken;
+import com.adt.authservice.repository.LeaveRepository;
 import com.adt.authservice.security.JwtTokenProvider;
 
 @Service
@@ -55,6 +57,7 @@ public class AuthService {
     private final EmailVerificationTokenService emailVerificationTokenService;
     private final UserDeviceService userDeviceService;
     private final PasswordResetTokenService passwordResetService;
+ 
 
     @Autowired
     public AuthService(UserService userService, JwtTokenProvider tokenProvider, RefreshTokenService refreshTokenService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, EmailVerificationTokenService emailVerificationTokenService, UserDeviceService userDeviceService, PasswordResetTokenService passwordResetService) {
@@ -66,7 +69,11 @@ public class AuthService {
         this.emailVerificationTokenService = emailVerificationTokenService;
         this.userDeviceService = userDeviceService;
         this.passwordResetService = passwordResetService;
+    
     }
+    
+    @Autowired
+    private LeaveRepository leaveRepository;
 
     /**
      * Registers a new user in the database by performing a series of quick checks.
@@ -131,6 +138,9 @@ public class AuthService {
 
         registeredUser.markVerificationConfirmed();
         userService.save(registeredUser);
+        LeaveModel leaveModel = new LeaveModel();
+        leaveModel.setEmpId(Math.toIntExact(registeredUser.getId()));
+        leaveRepository.save(leaveModel);
         return Optional.of(registeredUser);
     }
 
