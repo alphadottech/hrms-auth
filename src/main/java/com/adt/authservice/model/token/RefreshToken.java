@@ -15,15 +15,7 @@ package com.adt.authservice.model.token;
 
 import java.time.Instant;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.*;
 
 import org.hibernate.annotations.NaturalId;
 
@@ -31,6 +23,7 @@ import com.adt.authservice.model.UserDevice;
 import com.adt.authservice.model.audit.DateAudit;
 
 @Entity(name = "REFRESH_TOKEN")
+@Table(catalog = "EmployeeDB", schema = "user_schema", name = "REFRESH_TOKEN")
 public class RefreshToken extends DateAudit {
 
     @Id
