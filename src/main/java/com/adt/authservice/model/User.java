@@ -63,7 +63,7 @@ public class User extends DateAudit implements UserDetails {
 	private Boolean active;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })
-	@JoinTable(name = "USER_AUTHORITY", joinColumns = {
+	@JoinTable(name = "USER_AUTHORITY", schema = "user_schema", joinColumns = {
 			@JoinColumn(name = "EMPLOYEE_ID", referencedColumnName = "EMPLOYEE_ID") }, inverseJoinColumns = {
 					@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID") })
 	private Set<Role> roles = new HashSet<>();
