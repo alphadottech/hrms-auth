@@ -15,23 +15,14 @@ package com.adt.authservice.model.token;
 
 import java.time.Instant;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.*;
 
 import com.adt.authservice.model.TokenStatus;
 import com.adt.authservice.model.User;
 import com.adt.authservice.model.audit.DateAudit;
 
 @Entity(name = "EMAIL_VERIFICATION_TOKEN")
+@Table(catalog = "EmployeeDB", schema = "payroll_schema", name = "LeaveRequest")
 public class EmailVerificationToken extends DateAudit {
 
     @Id
