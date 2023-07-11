@@ -16,19 +16,10 @@ package com.adt.authservice.model;
 import com.adt.authservice.model.audit.DateAudit;
 import com.adt.authservice.model.token.RefreshToken;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.*;
 
 @Entity(name = "USER_DEVICE")
+@Table(catalog = "EmployeeDB", schema = "user_schema", name = "USER_DEVICE")
 public class UserDevice extends DateAudit {
 
     @Id

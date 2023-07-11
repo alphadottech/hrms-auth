@@ -16,18 +16,7 @@ package com.adt.authservice.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 
 import org.hibernate.annotations.NaturalId;
 
@@ -38,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * that role
  */
 @Entity(name = "ROLE")
+@Table(catalog = "EmployeeDB", schema = "user_schema", name = "ROLE")
 public class Role {
 
 	@Id
