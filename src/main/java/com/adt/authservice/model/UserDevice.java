@@ -25,7 +25,7 @@ public class UserDevice extends DateAudit {
     @Id
     @Column(name = "USER_DEVICE_ID")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_device_seq")
-    @SequenceGenerator(name = "user_device_seq", allocationSize = 1)
+    @SequenceGenerator(name = "user_device_seq", allocationSize = 1, schema = "user_schema")
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
