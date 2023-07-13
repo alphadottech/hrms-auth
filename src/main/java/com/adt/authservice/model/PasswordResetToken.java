@@ -28,7 +28,7 @@ public class PasswordResetToken extends DateAudit {
     @Id
     @Column(name = "TOKEN_ID")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pwd_reset_token_seq")
-    @SequenceGenerator(name = "pwd_reset_token_seq", allocationSize = 1)
+    @SequenceGenerator(name = "pwd_reset_token_seq", allocationSize = 1, schema = "user_schema")
     private Long id;
 
     @NaturalId
