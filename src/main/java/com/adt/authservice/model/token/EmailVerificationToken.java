@@ -28,7 +28,7 @@ public class EmailVerificationToken extends DateAudit {
     @Id
     @Column(name = "TOKEN_ID")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "email_token_seq")
-    @SequenceGenerator(name = "email_token_seq", allocationSize = 1)
+    @SequenceGenerator(name = "email_token_seq", allocationSize = 1, schema = "payroll_schema")
     private Long id;
 
     @Column(name = "TOKEN", nullable = false, unique = true)
