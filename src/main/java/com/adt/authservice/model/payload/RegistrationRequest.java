@@ -13,8 +13,11 @@
  */
 package com.adt.authservice.model.payload;
 
+import java.util.Set;
+
 import javax.validation.constraints.NotNull;
 
+import com.adt.authservice.model.Role;
 import com.adt.authservice.validation.annotation.NullOrNotBlank;
 
 public class RegistrationRequest {
@@ -27,12 +30,18 @@ public class RegistrationRequest {
 
     @NotNull(message = "Registration password cannot be null")
     private String password;
+    
+    @NotNull(message = "Specify user role")
+    private Set<Role> roles;
 
     public RegistrationRequest(String username, String email,
-                               String password) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
+    		@NotNull(message = "Registration password cannot be null") String password,
+			@NotNull(message = "Specify user role") Set<Role> roles) {
+    	super();
+		this.username = username;
+		this.email = email;
+		this.password = password;
+		this.roles = roles;
     }
 
     public RegistrationRequest() {
@@ -61,5 +70,12 @@ public class RegistrationRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+    
+    public Set<Role> getRoles() {
+  		return roles;
+  	}
+  	public void setRoles(Set<Role> roles) {
+  		this.roles = roles;
+  	}
 
 }
