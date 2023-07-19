@@ -148,8 +148,9 @@ public class AuthController {
 	 * Entry point for the user registration process. On successful registration,
 	 * publish an event to generate email verification token
 	 */
-	@PostMapping("/register")
+	
 	@PreAuthorize("hasRole('ADMIN')")
+	@PostMapping("/register")
 	public ResponseEntity registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
 		return authService.registerUser(registrationRequest).map(user -> {
 			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
@@ -162,7 +163,7 @@ public class AuthController {
 			applicationEventPublisher.publishEvent(onUserRegistrationCompleteEvent);
 			LOGGER.info("Registered User returned [API[: " + user);
 			return ResponseEntity
-					.ok(new ApiResponse(true, "The user has been successfully registered, and a verification email has been sent to the user. For inquiries related to other roles, please reach out to the administrator."));
+					.ok(new ApiResponse(true, "User registered successfully. Check your email for verification"));
 		}).orElseThrow(
 				() -> new UserRegistrationException(registrationRequest.getEmail(), "Missing user object in database"));
 	}

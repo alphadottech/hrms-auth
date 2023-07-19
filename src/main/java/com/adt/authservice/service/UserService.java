@@ -104,7 +104,8 @@ public class UserService {
 		newUser.setEmail(registerRequest.getEmail());
 		newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 		newUser.setUsername(registerRequest.getUsername());
-		newUser.addRoles(getRolesForNewUser(false));
+//		newUser.addRoles(getRolesForNewUser(false));
+		newUser.addRoles(registerRequest.getRoles());
 		newUser.setActive(true);
 		newUser.setEmailVerified(false);
 		return newUser;
@@ -115,14 +116,14 @@ public class UserService {
 	 *
 	 * @return list of roles for the new user
 	 */
-	private Set<Role> getRolesForNewUser(Boolean isToBeMadeAdmin) {
-		Set<Role> newUserRoles = new HashSet<>(roleService.findAll());
-		if (!isToBeMadeAdmin) {
-			newUserRoles.removeIf(Role::isAdminRole);
-		}
-		LOGGER.info("Setting user roles: " + newUserRoles);
-		return newUserRoles;
-	}
+//	private Set<Role> getRolesForNewUser(Boolean isToBeMadeAdmin) {
+//		Set<Role> newUserRoles = new HashSet<>(roleService.findAll());
+//		if (!isToBeMadeAdmin) {
+//			newUserRoles.removeIf(Role::isAdminRole);
+//		}
+//		LOGGER.info("Setting user roles: " + newUserRoles);
+//		return newUserRoles;
+//	}
 
 	/**
 	 * Log the given user out and delete the refresh token associated with it. If no

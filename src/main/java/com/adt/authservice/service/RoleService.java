@@ -14,6 +14,8 @@
 package com.adt.authservice.service;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,8 +36,8 @@ public class RoleService {
     /**
      * Find all roles from the database
      */
-    public Collection<Role> findAll() {
-        return roleRepository.findAll();
+    public Set<Role> findAll() {
+    	return new HashSet<>(roleRepository.findAll());
     }
 
 }
