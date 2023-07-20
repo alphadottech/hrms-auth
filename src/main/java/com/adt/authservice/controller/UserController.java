@@ -13,6 +13,8 @@
  */
 package com.adt.authservice.controller;
 
+import java.util.Set;
+
 import javax.validation.Valid;
 
 import org.slf4j.Logger;import org.slf4j.LoggerFactory;
@@ -32,11 +34,13 @@ import com.adt.authservice.event.OnUserAccountChangeEvent;
 import com.adt.authservice.event.OnUserLogoutSuccessEvent;
 import com.adt.authservice.exception.UpdatePasswordException;
 import com.adt.authservice.model.CustomUserDetails;
+import com.adt.authservice.model.Role;
 import com.adt.authservice.model.payload.ApiResponse;
 import com.adt.authservice.model.payload.LogOutRequest;
 import com.adt.authservice.model.payload.UpdatePasswordRequest;
 import com.adt.authservice.security.JwtTokenValidator;
 import com.adt.authservice.service.AuthService;
+import com.adt.authservice.service.RoleService;
 import com.adt.authservice.service.UserService;
 
 @RestController
@@ -47,16 +51,19 @@ public class UserController {
 	private final AuthService authService;
 	private final UserService userService;
 	private final ApplicationEventPublisher applicationEventPublisher;
+	
+	private final RoleService roleService;
 
 	@Autowired
 	JwtTokenValidator jwtTokenValidator;
 
 	@Autowired
 	public UserController(AuthService authService, UserService userService,
-			ApplicationEventPublisher applicationEventPublisher) {
+			ApplicationEventPublisher applicationEventPublisher, RoleService roleService) {
 		this.authService = authService;
 		this.userService = userService;
 		this.applicationEventPublisher = applicationEventPublisher;
+		this.roleService = roleService;
 	}
 
 	/**
@@ -122,5 +129,14 @@ public class UserController {
 	@GetMapping("/isuservalid")
 	public ResponseEntity<String> isUserValid() {
 		return new ResponseEntity<String>("Success", HttpStatus.OK);
+	}
+	/**
+	 * This method is used to provide all roles.
+	 * 
+	 * @return
+	 */
+	@GetMapping("/getAllRoles")
+	public ResponseEntity<Set<Role>> getAllRoles() {
+		return new ResponseEntity<Set<Role>>(roleService.findAll(), HttpStatus.OK);
 	}
 }
