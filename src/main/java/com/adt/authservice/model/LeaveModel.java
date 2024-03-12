@@ -5,66 +5,80 @@ package com.adt.authservice.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-
 @Table(catalog = "EmployeeDB", schema = "payroll_schema", name = "leave_balance")
 public class LeaveModel {
 
-    public int getEmpId() {
-        return empId;
-    }
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "serial_id")
+	private int serialNo;
 
-    public void setEmpId(int empId) {
-        this.empId = empId;
-    }
+	@Column(name = "employee_id")
+	private int empId;
 
-    public String getName() {
-        return name;
-    }
+	@Column(name = "name")
+	private String name;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	@Column(name = "leave_balance")
+	private int leaveBalance;
 
-    @Override
-    public String toString() {
-        return "LeaveModel{" +
-                "empId=" + empId +
-                ", name='" + name + '\'' +
-                ", leaveBalance=" + leaveBalance +
-                '}';
-    }
+	public int getSerialNo() {
+		return serialNo;
+	}
 
-    public LeaveModel() {
-    }
+	public void setSerialNo(int serialNo) {
+		this.serialNo = serialNo;
+	}
 
-    public LeaveModel(int empId, String name, int leaveBalance) {
-        this.empId = empId;
-        this.name = name;
-        this.leaveBalance = leaveBalance;
-    }
+	public int getEmpId() {
+		return empId;
+	}
 
-    public int getLeaveBalance() {
-        return leaveBalance;
-    }
+	public void setEmpId(int empId) {
+		this.empId = empId;
+	}
 
-    public void setLeaveBalance(int leaveBalance) {
-        this.leaveBalance = leaveBalance;
-    }
+	public String getName() {
+		return name;
+	}
 
-    @Id
-    @Column(name = "empid")
-    private int empId;
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    @Column(name = "name")
-    private String name;
+	public int getLeaveBalance() {
+		return leaveBalance;
+	}
 
+	public void setLeaveBalance(int leaveBalance) {
+		this.leaveBalance = leaveBalance;
+	}
 
-    @Column(name = "leave_balance")
-    private int leaveBalance;
+	@Override
+	public String toString() {
+		return "LeaveModel [serialNo=" + serialNo + ", empId=" + empId + ", name=" + name + ", leaveBalance="
+				+ leaveBalance + "]";
+	}
+
+	public LeaveModel() {
+		
+	}
+
+	public LeaveModel(int serialNo, int empId, String name, int leaveBalance) {
+		super();
+		this.serialNo = serialNo;
+		this.empId = empId;
+		this.name = name;
+		this.leaveBalance = leaveBalance;
+	}
+	
+	
 
 
 }
