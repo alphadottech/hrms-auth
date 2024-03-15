@@ -1,1 +1,1 @@
-# hrms-auth-service
+# hrms-auth
