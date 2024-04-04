@@ -149,7 +149,7 @@ public class AuthController {
 	 * publish an event to generate email verification token
 	 */
 	
-	@PreAuthorize("hasRole('ADMIN')")
+//	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/register")
 	public ResponseEntity registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
 		return authService.registerUser(registrationRequest).map(user -> {
