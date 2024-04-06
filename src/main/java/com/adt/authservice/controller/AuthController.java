@@ -71,33 +71,23 @@ public class AuthController {
 	private final AuthService authService;
 	private final JwtTokenProvider tokenProvider;
 	private final ApplicationEventPublisher applicationEventPublisher;
-
 	@Autowired
 	JwtTokenProvider jwtTokenProvider;
-
 	@Autowired
 	JwtTokenValidator jwtTokenValidator;
 	
 	@Value("${-Dmy.port}")
 	private String serverPort;
-
 	@Value("${-Dmy.property}")
 	private String ipaddress;
-
-	
 	@Value("${-UI.port}")
 	private String uiPort;
-
 	@Value("${-UI.property}")
 	private String uiAddress;
-
 	@Value("${-UI.scheme}")
 	private String scheme;
-
 	@Value("${-UI.context}")
 	private String context;
-
-
 
 	@Autowired
 	public AuthController(AuthService authService, JwtTokenProvider tokenProvider,
