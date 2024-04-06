@@ -22,7 +22,7 @@ import com.adt.authservice.model.User;
 import com.adt.authservice.model.audit.DateAudit;
 
 @Entity(name = "EMAIL_VERIFICATION_TOKEN")
-@Table(catalog = "EmployeeDB", schema = "payroll_schema", name = "LeaveRequest")
+@Table(catalog = "EmployeeDB", schema = "user_schema", name = "email_verification_token")
 public class EmailVerificationToken extends DateAudit {
 
     @Id
