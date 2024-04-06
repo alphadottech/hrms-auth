@@ -13,6 +13,16 @@ import javax.persistence.Table;
 @Table(catalog = "EmployeeDB", schema = "payroll_schema", name = "leave_balance")
 public class LeaveModel {
 
+	@Id
+	@Column(name = "emp_id")
+	private int empId;
+
+	@Column(name = "name")
+	private String name;
+
+	@Column(name = "leave_balance")
+	private int leaveBalance;
+
     public int getEmpId() {
         return empId;
     }
@@ -55,16 +65,7 @@ public class LeaveModel {
         this.leaveBalance = leaveBalance;
     }
 
-    @Id
-    @Column(name = "empid")
-    private int empId;
-
-    @Column(name = "name")
-    private String name;
-
-
-    @Column(name = "leave_balance")
-    private int leaveBalance;
+    
 
 
 }
