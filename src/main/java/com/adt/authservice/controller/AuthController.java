@@ -83,12 +83,20 @@ public class AuthController {
 
 	@Value("${-Dmy.property}")
 	private String ipaddress;
+
 	
 	@Value("${-UI.port}")
 	private String uiPort;
 
 	@Value("${-UI.property}")
 	private String uiAddress;
+
+	@Value("${-UI.scheme}")
+	private String scheme;
+
+	@Value("${-UI.context}")
+	private String context;
+
 
 
 	@Autowired
@@ -154,10 +162,10 @@ public class AuthController {
 	public ResponseEntity registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
 		return authService.registerUser(registrationRequest).map(user -> {
 			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
-					.scheme("http")
+					.scheme(scheme)
 					.host(ipaddress)
 					.port(serverPort)
-					.path("/api/auth/registrationConfirmation");
+					.path(context+"/api/auth/registrationConfirmation");
 			OnUserRegistrationCompleteEvent onUserRegistrationCompleteEvent = new OnUserRegistrationCompleteEvent(user,
 					urlBuilder);
 			applicationEventPublisher.publishEvent(onUserRegistrationCompleteEvent);
@@ -177,7 +185,7 @@ public class AuthController {
 	public ResponseEntity resetLink(@Valid @RequestBody PasswordResetLinkRequest passwordResetLinkRequest) {
 		return authService.generatePasswordResetToken(passwordResetLinkRequest).map(passwordResetToken -> {
 			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
-					.scheme("http")
+					.scheme(scheme)
 					.host(uiAddress)
 					.port(uiPort)
 					.path("/NewpassForm");
@@ -231,10 +239,10 @@ public class AuthController {
 
 		return Optional.ofNullable(newEmailToken.getUser()).map(registeredUser -> {
 			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
-					.scheme("http")
+					.scheme(scheme)
 					.host(ipaddress)
 					.port(serverPort)
-					.path("/api/auth/registrationConfirmation");
+					.path(context+"/api/auth/registrationConfirmation");
 			OnRegenerateEmailVerificationEvent regenerateEmailVerificationEvent = new OnRegenerateEmailVerificationEvent(
 					registeredUser, urlBuilder, newEmailToken);
 			applicationEventPublisher.publishEvent(regenerateEmailVerificationEvent);
