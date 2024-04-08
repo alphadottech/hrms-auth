@@ -20,12 +20,10 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,24 +66,32 @@ import com.adt.authservice.service.AuthService;
 public class AuthController {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+	
 	private final AuthService authService;
 	private final JwtTokenProvider tokenProvider;
 	private final ApplicationEventPublisher applicationEventPublisher;
+
 	@Autowired
 	JwtTokenProvider jwtTokenProvider;
+
 	@Autowired
 	JwtTokenValidator jwtTokenValidator;
-	
+
 	@Value("${-Dmy.port}")
-	private String serverPort;
+	private Integer serverPort;
+
 	@Value("${-Dmy.property}")
 	private String ipaddress;
+
 	@Value("${-UI.port}")
-	private String uiPort;
+	private Integer uiPort;
+
 	@Value("${-UI.property}")
 	private String uiAddress;
+
 	@Value("${-UI.scheme}")
 	private String scheme;
+
 	@Value("${-UI.context}")
 	private String context;
 
@@ -131,7 +137,8 @@ public class AuthController {
 		return authService.createAndPersistRefreshTokenForDevice(authentication, loginRequest)
 				.map(RefreshToken::getToken).map(refreshToken -> {
 					String jwtToken = authService.generateToken(customUserDetails);
-					JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse(jwtToken, refreshToken, tokenProvider.getExpiryDuration());
+					JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse(jwtToken,
+							refreshToken, tokenProvider.getExpiryDuration());
 					LoginResponse loginResponse = new LoginResponse();
 					loginResponse.setJwtAuthenticationResponse(jwtAuthenticationResponse);
 					loginResponse.setEmployeeId(customUserDetails.getId());
@@ -146,7 +153,6 @@ public class AuthController {
 	 * Entry point for the user registration process. On successful registration,
 	 * publish an event to generate email verification token
 	 */
-	
 //	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/register")
 	public ResponseEntity registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
