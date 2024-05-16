@@ -36,24 +36,20 @@ public class Role {
 	private Long id;
 
 	@Column(name = "ROLE_NAME")
-	@Enumerated(EnumType.STRING)
-	@NaturalId
-	private RoleName role;
+	private String role;
 
 	@ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })
 	@JsonIgnore
 	private Set<User> userList = new HashSet<>();
 
-	public Role(RoleName role) {
-		this.role = role;
-	}
+	
 
 	public Role() {
 
 	}
 
 	public boolean isAdminRole() {
-		return null != this && this.role.equals(RoleName.ROLE_ADMIN);
+		return null != this && this.role.equals("ROLE_ADMIN");
 	}
 
 	public Long getId() {
@@ -64,11 +60,13 @@ public class Role {
 		this.id = id;
 	}
 
-	public RoleName getRole() {
+	
+
+	public String getRole() {
 		return role;
 	}
 
-	public void setRole(RoleName role) {
+	public void setRole(String role) {
 		this.role = role;
 	}
 
