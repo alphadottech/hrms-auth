@@ -13,6 +13,8 @@
  */
 package com.adt.authservice.repository;
 
+import java.util.Set;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -22,4 +24,6 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 	
 	@Query(value="select role_id from role where role_name=:roleName", nativeQuery = true)
 	public Long findByRoleName(String roleName);
+	
+	public Set<Role> findByDefaultRole(boolean defaultRole);
 }

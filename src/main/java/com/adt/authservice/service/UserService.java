@@ -104,7 +104,7 @@ public class UserService {
 		newUser.setEmail(registerRequest.getEmail());
 		newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 		newUser.setUsername(registerRequest.getUsername());
-		newUser.addRoles(getRolesForNewUser(false));
+		newUser.addRoles(getRolesForNewUser(true));
 //		newUser.addRoles(registerRequest.getRoles());
 		newUser.setActive(true);
 		newUser.setEmailVerified(false);
@@ -116,14 +116,10 @@ public class UserService {
 	 *
 	 * @return list of roles for the new user
 	 */
-	private Set<Role> getRolesForNewUser(Boolean isToBeMadeAdmin) {
-		Set<Role> newUserRoles = new HashSet<>(roleService.findAll());
-		if (!isToBeMadeAdmin) {
-			newUserRoles.removeIf(Role::isAdminRole);
-			newUserRoles.removeIf(Role::isHrRole);
-		}
-		LOGGER.info("Setting user roles: " + newUserRoles);
-		return newUserRoles;
+	private Set<Role> getRolesForNewUser(Boolean isDefaultRole) {
+		Set<Role> role = roleService.getRole(isDefaultRole);
+		LOGGER.info("Setting user roles: " + role);
+		return role;
 	}
 
 	/**

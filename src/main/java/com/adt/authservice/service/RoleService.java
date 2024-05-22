@@ -39,5 +39,9 @@ public class RoleService {
     public Set<Role> findAll() {
     	return new HashSet<>(roleRepository.findAll());
     }
+    
+    public Set<Role> getRole(boolean defaultRole) {
+		return roleRepository.findByDefaultRole(defaultRole);
+	}
 
 }
