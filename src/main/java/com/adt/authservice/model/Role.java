@@ -36,26 +36,22 @@ public class Role {
 	private Long id;
 
 	@Column(name = "ROLE_NAME")
-	@Enumerated(EnumType.STRING)
-	@NaturalId
-	private RoleName role;
+	private String role;
+	
+	@Column(name = "DEFAULT_ROLE")
+	private boolean defaultRole;
 
 	@ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })
 	@JsonIgnore
 	private Set<User> userList = new HashSet<>();
 
-	public Role(RoleName role) {
-		this.role = role;
-	}
+	
 
 	public Role() {
 
 	}
 
-	public boolean isAdminRole() {
-		return null != this && this.role.equals(RoleName.ROLE_ADMIN);
-	}
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -64,11 +60,13 @@ public class Role {
 		this.id = id;
 	}
 
-	public RoleName getRole() {
+	
+
+	public String getRole() {
 		return role;
 	}
 
-	public void setRole(RoleName role) {
+	public void setRole(String role) {
 		this.role = role;
 	}
 
@@ -79,4 +77,15 @@ public class Role {
 	public void setUserList(Set<User> userList) {
 		this.userList = userList;
 	}
+
+
+	public boolean isDefaultRole() {
+		return defaultRole;
+	}
+
+
+	public void setDefaultRole(boolean defaultRole) {
+		this.defaultRole = defaultRole;
+	}
+	
 }
