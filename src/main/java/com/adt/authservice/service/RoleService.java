@@ -15,27 +15,32 @@ package com.adt.authservice.service;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.adt.authservice.model.Role;
 import com.adt.authservice.repository.RoleRepository;
+import com.adt.authservice.util.TableDataExtractor;
 
 @Service
 public class RoleService {
 
     private final RoleRepository roleRepository;
+    @Autowired
+    TableDataExtractor tableDataExtractor;
 
     @Autowired
     public RoleService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 
-    /**
-     * Find all roles from the database
-     */
     public Set<Role> findAll() {
     	return new HashSet<>(roleRepository.findAll());
     }
@@ -43,5 +48,121 @@ public class RoleService {
     public Set<Role> getRole(boolean defaultRole) {
 		return roleRepository.findByDefaultRole(defaultRole);
 	}
+   
+	public String savaRole(Role role) {
+		role.setRole(role.getRole().toUpperCase());
+		if (!role.getRole().contains("ROLE_")) {
+			String role1 = role.getRole();
+			role.setRole("ROLE_" + role1);
+		}
+		String sql="select * from user_schema.role  where role_name="+"'"+role.getRole()+"'";
+		List<Map<String, Object>> roleDate = tableDataExtractor.extractDataFromTable(sql);
+		if(roleDate==null||roleDate.isEmpty()) {
+		roleRepository.save(role);
+		return "Role saved successfully";
+		}
+		return "This role is already present";
+	}
 
+	
+	public String updateRole(Role role) {
+		role.setRole(role.getRole().toUpperCase());
+		if (!role.getRole().contains("ROLE_")) {
+			String role1 = role.getRole();
+			role.setRole("ROLE_" + role1);
+		}
+		try {
+			Optional<Role> updateRole = roleRepository.findById(role.getId());
+			Optional<Role> roleinfo = roleRepository.findByRoleName(role.getRole());
+			if (updateRole.isPresent()) {
+				if (roleinfo.isPresent() && !roleinfo.get().getRole().equalsIgnoreCase(updateRole.get().getRole())) {
+					return "This role name already present";
+				}
+				Role roles = updateRole.get();
+				roles.setRole(role.getRole());
+				roles.setDefaultRole(role.isDefaultRole());
+				roleRepository.save(roles);
+				return "Role updated successfully";
+			}
+
+			return "Data not present";
+
+		} catch (Exception e) {
+			return e.getMessage();
+
+		}
+		
+	}
+
+	public String deleteRole(Long roleId) {	
+		Optional<Role> role = roleRepository.findById(roleId);
+		if (role.isPresent()) {
+			String sql = "select * from user_schema.user_authority where role_id=" + roleId;
+			List<Map<String, Object>> tableData = tableDataExtractor.extractDataFromTable(sql);
+			if (tableData == null || tableData.isEmpty()) {
+				roleRepository.deleteById(roleId);
+			} else {
+				return "You cannot delete this role, it is already mapped";
+			}
+		} else {
+			return "Role id does not exist";
+		}
+		return "Role deleted successfully";
+
+	}
+      
+	public Optional<Role> getRole(Long roleId) {
+		return roleRepository.findById(roleId);
+	}
+	
+	public ResponseEntity<?> getRoleAssosiateEmployee(Long employeeId) {
+		String sql = "SELECT  r.role_name  FROM user_schema.role r JOIN user_schema.user_authority ua ON r.role_id = ua.role_id WHERE ua.employee_id ="+ employeeId;
+		List<Map<String, Object>> tableData = tableDataExtractor.extractDataFromTable(sql);
+		return new ResponseEntity<>(tableData,HttpStatus.OK) ;
+		
+		
+	}
+	
+	public String updateRoleOfemployee(Long employeeId, List<String> listOfRoleName) {
+		String sql3 = " SELECT r.role_name FROM user_schema.role r JOIN user_schema.user_authority ua ON r.role_id = ua.role_id WHERE r.default_role = false AND ua.employee_id = "
+				+ employeeId + "";
+		List<Map<String, Object>> tableData1 = tableDataExtractor.extractDataFromTable(sql3);
+		for (Map<String, Object> roleData : tableData1) {
+			String roleName = String.valueOf(roleData.get("role_name"));
+			String sql1 = "DELETE FROM user_schema.user_authority ua USING user_schema.role r WHERE ua.role_id = r.role_id  AND ua.employee_id ="
+					+ employeeId + " AND r.role_name =" + "'" + roleName + "'";
+			tableDataExtractor.insertDataFromTable(sql1);
+		}
+		String roleName=null;
+		String sql4 = "select role_name from user_schema.role where default_role=false";
+		List<Map<String, Object>> tableData2 = tableDataExtractor.extractDataFromTable(sql4);
+		for (Map<String, Object> roleData : tableData2) {
+			 roleName = String.valueOf(roleData.get("role_name"));
+			 roleName= roleName.toUpperCase();
+			if (listOfRoleName.contains(roleName)) {
+				String sql1 = "INSERT INTO user_schema.user_authority (employee_id, role_id) SELECT " + employeeId
+						+ ", r.role_id FROM user_schema.role r WHERE r.role_name =" + "'" + roleName + "'";
+				tableDataExtractor.insertDataFromTable(sql1);
+
+			}
+
+		}
+       
+		return "Role data is added of user";
+
+	}
+	
+	public String deleteRoleAssosiatedByEmployee(Long employeeId,String roleName) {
+		String sql = "SELECT ua.* FROM user_schema.user_authority ua JOIN user_schema.role r ON ua.role_id = r.role_id WHERE ua.employee_id ="
+				+ employeeId +" AND r.role_name =" + "'" + roleName + "'";
+		List<Map<String, Object>> tableData = tableDataExtractor.extractDataFromTable(sql);
+		if(tableData!=null||!tableData.isEmpty()) {
+			String sql1 ="DELETE FROM user_schema.user_authority ua USING user_schema.role r WHERE ua.role_id = r.role_id  AND ua.employee_id = 18 AND r.role_name ="+"'"+ roleName+"'";
+			tableDataExtractor.insertDataFromTable(sql1);
+			return "Deteled mapped role";
+		}
+		return "Mapped role not prsent";
+	}
+	
+	
 }
