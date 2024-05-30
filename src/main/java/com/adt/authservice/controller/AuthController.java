@@ -13,9 +13,11 @@
  */
 package com.adt.authservice.controller;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -23,11 +25,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,6 +53,7 @@ import com.adt.authservice.exception.PasswordResetLinkException;
 import com.adt.authservice.exception.TokenRefreshException;
 import com.adt.authservice.exception.UserLoginException;
 import com.adt.authservice.exception.UserRegistrationException;
+import com.adt.authservice.model.ApiDetails;
 import com.adt.authservice.model.CustomUserDetails;
 import com.adt.authservice.model.Role;
 import com.adt.authservice.model.payload.ApiResponse;
@@ -59,7 +68,9 @@ import com.adt.authservice.model.token.EmailVerificationToken;
 import com.adt.authservice.model.token.RefreshToken;
 import com.adt.authservice.security.JwtTokenProvider;
 import com.adt.authservice.security.JwtTokenValidator;
+import com.adt.authservice.service.ApiDetailsService;
 import com.adt.authservice.service.AuthService;
+import com.adt.authservice.service.RoleService;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -198,6 +209,7 @@ public class AuthController {
 	 * changing the password to the user's mail through the event.
 	 */
 
+	
 	@PostMapping("/password/reset")
 	public ResponseEntity resetPassword(@Valid @RequestBody PasswordResetRequest passwordResetRequest) {
 		return authService.resetPassword(passwordResetRequest).map(changedUser -> {
@@ -261,5 +273,9 @@ public class AuthController {
 		}).orElseThrow(() -> new TokenRefreshException(tokenRefreshRequest.getRefreshToken(),
 				"Unexpected error during token refresh. Please ̥and login again."));
 	}
+	
+	
+	
+	
 
 }

@@ -34,7 +34,7 @@ public class Auth {
 		Claims claims = getUserIdFromJWT(token);
 		List<GrantedAuthority> authorities = getAuthorities(claims);	
 		boolean isValidAuthority = false;
-		String sql = "SELECT r.role_name FROM user_schema.role r JOIN av_schema.api_maping  am ON r.role_id = am.role_id JOIN av_schema.api_details ad ON am.api_id = ad.api_id WHERE ad.api_name ="
+		String sql = "SELECT r.role_name FROM user_schema.role r JOIN av_schema.api_mapping  am ON r.role_id = am.role_id JOIN av_schema.api_details ad ON am.api_id = ad.api_id WHERE ad.api_name ="
 				+ "'" + authority + "'";
 		List<Map<String, Object>> priortimeData = dataExtractor.extractDataFromTable(sql);
 		for (Map<String, Object> priortime : priortimeData) {
@@ -53,7 +53,7 @@ public class Auth {
 		Claims claims = getUserIdFromJWT(token);
 		List<GrantedAuthority> authorities = getAuthorities(claims);
 		boolean isValidAuthority = false;
-		String sql = "SELECT r.role_name FROM user_schema.role r JOIN av_schema.api_maping  am ON r.role_id = am.role_id JOIN av_schema.api_details ad ON am.api_id = ad.api_id WHERE ad.api_name ="+"'"+authority+"'";
+		String sql = "SELECT r.role_name FROM user_schema.role r JOIN av_schema.api_mapping  am ON r.role_id = am.role_id JOIN av_schema.api_details ad ON am.api_id = ad.api_id WHERE ad.api_name ="+"'"+authority+"'";
 		List<Map<String, Object>> priortimeData = dataExtractor.extractDataFromTable(sql);
 		for (Map<String, Object> priortime : priortimeData) {
 	    	 authority = String.valueOf(priortime.get("role_name"));
