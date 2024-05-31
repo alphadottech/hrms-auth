@@ -1,6 +1,6 @@
 package com.adt.authservice.errorHandlingUtilities;
 
-import java.nio.file.AccessDeniedException;
+
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -64,9 +65,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 			return buildResponseEntity(apiError);
 		}
 
-		@ExceptionHandler({ AccessDeniedException.class })
-		public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex) {
-			String message = messageSource.getMessage("api.error.access.denied", null, Locale.ENGLISH);
+		@ExceptionHandler(AccessDeniedException.class)
+		public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex) {
+			String message = ex.getMessage();
 			ApiError errors = new ApiError(HttpStatus.FORBIDDEN, message, ex);
 			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(), errors.getMessage(),
 					errors.getTimestamp());
