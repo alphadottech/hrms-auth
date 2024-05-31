@@ -104,6 +104,7 @@ public class RoleController {
 	}
 	
     @PreAuthorize("@auth.allow('DELETE_API_DETAIL_DATA')")
+    @Transactional
 	@DeleteMapping("/deleteApiDetailData")
     public ResponseEntity<String> deleteApiDetails(@Param(value = "apiName") String apiName){
 		return new ResponseEntity<>(apiDetailsService.deleteApiDetails(apiName), HttpStatus.OK);
