@@ -21,6 +21,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -41,11 +44,18 @@ public class RoleService {
         this.roleRepository = roleRepository;
     }
 
-    public Set<Role> findAll() {
-    	return new HashSet<>(roleRepository.findAll());
+    public List<Role> getAllRole(){
+    	return roleRepository.findAll();	
+    }
+    
+    
+    public Page<Role> findAll(int page ,int size) {
+    	Pageable pageable = PageRequest.of(page, size);
+    	return roleRepository.findAll(pageable);
     }
     
     public Set<Role> getRole(boolean defaultRole) {
+    	
 		return roleRepository.findByDefaultRole(defaultRole);
 	}
    
@@ -152,7 +162,7 @@ public class RoleService {
 
 	}
 	
-	public String deleteRoleAssosiatedByEmployee(Long employeeId,String roleName) {
+	public String deleteRoleAssociatedByEmployee(Long employeeId,String roleName) {
 		String sql = "SELECT ua.* FROM user_schema.user_authority ua JOIN user_schema.role r ON ua.role_id = r.role_id WHERE ua.employee_id ="
 				+ employeeId +" AND r.role_name =" + "'" + roleName + "'";
 		List<Map<String, Object>> tableData = tableDataExtractor.extractDataFromTable(sql);

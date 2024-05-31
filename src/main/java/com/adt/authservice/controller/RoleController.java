@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.adt.authservice.model.ApiDetails;
@@ -33,10 +35,12 @@ public class RoleController {
 	@Autowired
 	public ApiDetailsService apiDetailsService;
 	
-   @PreAuthorize("@auth.allow('GET_ALL_ROLE')")
+	@PreAuthorize("@auth.allow('GET_ALL_ROLE')")
 	@GetMapping("/getAllRoles")
-	public ResponseEntity<Set<Role>> getAllRoles() {
-		return new ResponseEntity<Set<Role>>(roleService.findAll(), HttpStatus.OK);
+	public ResponseEntity<Page<Role>> getAllRoles(
+			@RequestParam(value = "page", defaultValue = "0", required = false) int page,
+			@RequestParam(value = "size", defaultValue = "10", required = false) int size) {
+		return new ResponseEntity<Page<Role>>(roleService.findAll(page, size), HttpStatus.OK);
 	}
     @PreAuthorize("@auth.allow('CREATE_ROLE')")
 	@PostMapping("/createRole")
@@ -70,8 +74,8 @@ public class RoleController {
 		return new ResponseEntity<>(roleService.getRole(roleId), HttpStatus.OK);
 	}
 	
-    @PreAuthorize("@auth.allow('GET_ROLE_ASSING_BY_EMPLOYEE')")
-	@GetMapping("/getRoleAssingByEmployee")
+    @PreAuthorize("@auth.allow('GET_ROLE_ASSIGNED_TO_EMPLOYEE')")
+	@GetMapping("/getRoleAssignToEmployee")
 	public ResponseEntity<?> getEmployeeAssosiateRole(@Param(value = "employeeId") Long employeeId){		
 		return new ResponseEntity<>(roleService.getRoleAssosiateEmployee(employeeId), HttpStatus.OK);
 	}
@@ -81,10 +85,10 @@ public class RoleController {
 		return new ResponseEntity<>(roleService.updateRoleOfemployee(employeeId,roleName), HttpStatus.OK);
 		
 	}
-    @PreAuthorize("@auth.allow('DELETE_ASSOSIATED_ROLE')")
-	@DeleteMapping("/deleteAssosiatedRole")
-	public ResponseEntity<String> deleteAsosiatedRole(@Param(value = "employeeId") Long employeeId,@Param(value = "roleName") String roleName) {
-		return new ResponseEntity<>(roleService.deleteRoleAssosiatedByEmployee(employeeId,roleName), HttpStatus.OK);
+    @PreAuthorize("@auth.allow('DELETE_ASSOCIATED_ROLE')")
+	@DeleteMapping("/deleteAssociatedRole")
+	public ResponseEntity<String> deleteAssociatedRole(@Param(value = "employeeId") Long employeeId,@Param(value = "roleName") String roleName) {
+		return new ResponseEntity<>(roleService.deleteRoleAssociatedByEmployee(employeeId,roleName), HttpStatus.OK);
 
 	}
     @PreAuthorize("@auth.allow('SAVE_API_DETAILS')")
@@ -100,6 +104,7 @@ public class RoleController {
 	}
 	
     @PreAuthorize("@auth.allow('DELETE_API_DETAIL_DATA')")
+    @Transactional
 	@DeleteMapping("/deleteApiDetailData")
     public ResponseEntity<String> deleteApiDetails(@Param(value = "apiName") String apiName){
 		return new ResponseEntity<>(apiDetailsService.deleteApiDetails(apiName), HttpStatus.OK);
@@ -107,11 +112,24 @@ public class RoleController {
 	}
     @PreAuthorize("@auth.allow('GET_ALL_API_DETAILS')")
 	@GetMapping("/getAllApiDetails")
-	public ResponseEntity <List<ApiDetails>> getAllApiDetails(){
-		return new ResponseEntity<>(apiDetailsService.getAllApiDetails(), HttpStatus.OK);
-		
+	public ResponseEntity <Page<ApiDetails>> getAllApiDetails(@RequestParam(value = "page", defaultValue = "0", required = false) int page,
+			@RequestParam(value = "size", defaultValue = "10", required = false) int size){
+		return new ResponseEntity<>(apiDetailsService.getAllApiDetails(page,size), HttpStatus.OK);
 	}
-	
+    
+    @PreAuthorize("@auth.allow('GET_LIST_OF_API_NAME_BY_ROLE_NAME')")
+    @GetMapping("/getListOfApiNameByRole")
+    public ResponseEntity<?> getListOfApiNameByRole(@Param(value = "apiName") String apiName) {
+		return new ResponseEntity<>(apiDetailsService.getListOfApiNameByRole(apiName), HttpStatus.OK);
+	}
+    
+    @PreAuthorize("@auth.allow('UPDATE_ROLE_OF_EMPLOYEE')")
+   	@PutMapping("/addAndUpdateRoleMapping")
+   	public ResponseEntity<?> addAndUpdateRoleMapping(@Param(value = "roleName") String roleName, @RequestBody List<String> apiname){
+   		return new ResponseEntity<>(apiDetailsService.addAndUpdateRoleMapping(apiname,roleName), HttpStatus.OK);
+   		
+   	}
+       
 
 	
 }

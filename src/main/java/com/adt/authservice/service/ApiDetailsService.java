@@ -1,9 +1,13 @@
 package com.adt.authservice.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,7 @@ public class ApiDetailsService {
 	public String saveApiDetails(ApiDetails apiDetails) {
 		Optional<ApiDetails> apidetailsdata = apiDetailsRepository.findByApiName(apiDetails.getApiName());
 		if (!apidetailsdata.isPresent()) {
+			apiDetails.setApiName(apiDetails.getApiName().toUpperCase());
 			apiDetailsRepository.save(apiDetails);
 			return "Data saved successfuly";
 		} else {
@@ -37,9 +42,10 @@ public class ApiDetailsService {
 		Optional<ApiDetails> apidetailsdata = apiDetailsRepository.findByApiId(apiDetails.getApiId());
 		if (apidetailsdata.isPresent()) {
 			ApiDetails apiData = apidetailsdata.get();
-			apiData.setApiName(apiDetails.getApiName());
-			apiData.setMathodType(apiDetails.getMathodType());
+			apiData.setApiName(apiDetails.getApiName().toUpperCase());
+			apiData.setMethodType(apiDetails.getMethodType());
 			apiData.setServiceName(apiDetails.getServiceName());
+			apiDetailsRepository.save(apiData);
 			return "API data updated successfully";
 
 		}
@@ -69,23 +75,32 @@ public class ApiDetailsService {
 
 	}
 
-	public List<ApiDetails> getAllApiDetails() {
-		List<ApiDetails> apidetailsdata = apiDetailsRepository.findAll();
-		return apidetailsdata;
+	public Page<ApiDetails> getAllApiDetails(int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+
+		return apiDetailsRepository.findAll(pageable);
 	}
 
 	public String addAndUpdateRoleMapping(List<String> apiNameList, String roleName) {
-		String sql = "DELETE am FROM av_schema.api_mapping am JOIN user_schema.role r ON am.ROLE_ID = r.role_id WHERE r.role_name ="
+		String sql = "DELETE FROM av_schema.api_mapping am USING user_schema.role r WHERE am.ROLE_ID = r.role_id AND r.role_name ="
 				+ "'" + roleName + "'";
-		   tableDataExtractor.insertDataFromTable(sql);
+		tableDataExtractor.insertDataFromTable(sql);
 		for (String apiName : apiNameList) {
 			String sql1 = "INSERT INTO av_schema.api_mapping (api_id, role_id) SELECT ad.api_id, r.role_id FROM av_schema.api_details ad JOIN user_schema.role r ON r.role_name ="
 					+ "'" + roleName + "'" + " WHERE ad.api_name =" + "'" + apiName + "'";
 			tableDataExtractor.insertDataFromTable(sql1);
-			return "Data update successfully";
-		}
-		return "data not present";
 
+		}
+		return "Data update successfully";
+
+	}
+	
+	
+	public ResponseEntity<?> getListOfApiNameByRole(String roleName) {
+		String sql = "SELECT ad.api_name FROM av_schema.api_details ad JOIN av_schema.api_mapping am ON ad.api_id = am.api_id JOIN user_schema.role r ON am.role_id = r.role_id WHERE r.role_name ="
+				+ "'" + roleName + "'";
+		List<Map<String, Object>> apiDate = tableDataExtractor.extractDataFromTable(sql);
+		return new ResponseEntity<>(apiDate, HttpStatus.OK);
 	}
 
 }
