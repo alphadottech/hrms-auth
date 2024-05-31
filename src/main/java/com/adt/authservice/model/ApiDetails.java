@@ -23,7 +23,7 @@ public class ApiDetails {
 	@Column(name = "api_name")
 	private String apiName;
 	@Column(name = "method_type")
-	private String mathodType;
+	private String methodType;
 	@Column(name = "service_name")
 	private String serviceName;
 
