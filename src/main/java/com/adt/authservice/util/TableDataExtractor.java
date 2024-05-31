@@ -18,7 +18,10 @@ public class TableDataExtractor {
     }
 
     public List<Map<String, Object>> extractDataFromTable(String sql) {
-
         return jdbcTemplate.queryForList(sql);
     }
+   public int  insertDataFromTable(String sql){   
+	   return jdbcTemplate.update(sql);
+    }
+   
 }

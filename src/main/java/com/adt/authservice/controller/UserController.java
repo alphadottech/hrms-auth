@@ -20,12 +20,15 @@ import javax.validation.Valid;
 import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -91,8 +94,8 @@ public class UserController {
 	/**
 	 * Updates the password of the current logged in user
 	 */
+	@PreAuthorize("@auth.allow('CHANGE_PASSWORD')")
 	@PostMapping("/password/update")
-	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity updateUserPassword(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest) {
 		CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
@@ -130,13 +133,6 @@ public class UserController {
 	public ResponseEntity<String> isUserValid() {
 		return new ResponseEntity<String>("Success", HttpStatus.OK);
 	}
-	/**
-	 * This method is used to provide all roles.
-	 * 
-	 * @return
-	 */
-	@GetMapping("/getAllRoles")
-	public ResponseEntity<Set<Role>> getAllRoles() {
-		return new ResponseEntity<Set<Role>>(roleService.findAll(), HttpStatus.OK);
-	}
+	
+	
 }
