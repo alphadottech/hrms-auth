@@ -24,6 +24,9 @@ public class ApiDetailsService {
 
 	@Autowired
 	TableDataExtractor tableDataExtractor;
+	
+	    private static final int MAX_PAGE_SIZE = 50;
+	    private static final int DEFAULT_PAGE_SIZE = 10;
 
 	public String saveApiDetails(ApiDetails apiDetails) {
 		Optional<ApiDetails> apidetailsdata = apiDetailsRepository.findByApiName(apiDetails.getApiName());
@@ -59,7 +62,6 @@ public class ApiDetailsService {
 			apiDetailsRepository.deleteByApiName(apiName);
 
 			return "Data deleted successfully";
-
 		}
 		return "API data not present";
 	}
@@ -76,6 +78,9 @@ public class ApiDetailsService {
 	}
 
 	public Page<ApiDetails> getAllApiDetails(int page, int size) {
+		  if (size <= 0 || size > MAX_PAGE_SIZE) {
+              size = DEFAULT_PAGE_SIZE;
+          }
 		Pageable pageable = PageRequest.of(page, size);
 
 		return apiDetailsRepository.findAll(pageable);
