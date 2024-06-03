@@ -21,12 +21,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.adt.authservice.model.CustomUserDetails;
 import com.adt.authservice.model.User;
 import com.adt.authservice.repository.UserRepository;
 
 @Service
+@Transactional
 public class CustomUserDetailsService implements UserDetailsService {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
@@ -39,7 +41,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		 System.out.println("call start"); 
+		long start1 = System.nanoTime();
 		Optional<User> dbUser = userRepository.findByEmail(email);
+		 long end1 = System.nanoTime();  
+		 System.out.println("loadUserByUsername Time in nano seconds: "+ (end1-start1)); 
 		LOGGER.info("Fetched user : " + dbUser + " by " + email);
 		return dbUser.map(CustomUserDetails::new).orElseThrow(() -> new UsernameNotFoundException(
 				"Couldn't find a matching user email in the database for " + email));
