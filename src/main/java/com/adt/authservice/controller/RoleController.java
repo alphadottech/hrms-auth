@@ -119,8 +119,8 @@ public class RoleController {
     
     @PreAuthorize("@auth.allow('GET_LIST_OF_API_NAME_BY_ROLE_NAME')")
     @GetMapping("/getListOfApiNameByRole")
-    public ResponseEntity<?> getListOfApiNameByRole(@Param(value = "apiName") String apiName) {
-		return new ResponseEntity<>(apiDetailsService.getListOfApiNameByRole(apiName), HttpStatus.OK);
+    public ResponseEntity<?> getListOfApiNameByRole(@Param(value = "roleName") String roleName) {
+		return new ResponseEntity<>(apiDetailsService.getListOfApiNameByRole(roleName), HttpStatus.OK);
 	}
     
     @PreAuthorize("@auth.allow('UPDATE_ROLE_OF_EMPLOYEE')")

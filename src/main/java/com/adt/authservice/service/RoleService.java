@@ -38,6 +38,9 @@ public class RoleService {
     private final RoleRepository roleRepository;
     @Autowired
     TableDataExtractor tableDataExtractor;
+    
+    private static final int MAX_PAGE_SIZE = 50;
+    private static final int DEFAULT_PAGE_SIZE = 10;
 
     @Autowired
     public RoleService(RoleRepository roleRepository) {
@@ -50,6 +53,9 @@ public class RoleService {
     
     
     public Page<Role> findAll(int page ,int size) {
+    	  if (size <= 0 || size > MAX_PAGE_SIZE) {
+              size = DEFAULT_PAGE_SIZE;
+          }
     	Pageable pageable = PageRequest.of(page, size);
     	return roleRepository.findAll(pageable);
     }
