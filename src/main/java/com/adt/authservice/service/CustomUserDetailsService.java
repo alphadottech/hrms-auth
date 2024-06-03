@@ -40,12 +40,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		 System.out.println("call start"); 
-		long start1 = System.nanoTime();
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {		
 		Optional<User> dbUser = userRepository.findByEmail(email);
 		 long end1 = System.nanoTime();  
-		 System.out.println("loadUserByUsername Time in nano seconds: "+ (end1-start1)); 
 		LOGGER.info("Fetched user : " + dbUser + " by " + email);
 		return dbUser.map(CustomUserDetails::new).orElseThrow(() -> new UsernameNotFoundException(
 				"Couldn't find a matching user email in the database for " + email));
