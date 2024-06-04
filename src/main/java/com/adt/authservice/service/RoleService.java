@@ -13,6 +13,7 @@
  */
 package com.adt.authservice.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -150,20 +151,24 @@ public class RoleService {
 			tableDataExtractor.insertDataFromTable(sql1);
 		}
 		String roleName=null;
-		String sql4 = "select role_name from user_schema.role where default_role=false";
+		String sql4 = " SELECT r.role_name FROM user_schema.role r JOIN user_schema.user_authority ua ON r.role_id = ua.role_id WHERE r.default_role = true AND ua.employee_id = "
+				+ employeeId + "";
+		List<String> listOfDefaultRole=new ArrayList<>();
 		List<Map<String, Object>> tableData2 = tableDataExtractor.extractDataFromTable(sql4);
 		for (Map<String, Object> roleData : tableData2) {
 			 roleName = String.valueOf(roleData.get("role_name"));
 			 roleName= roleName.toUpperCase();
-			if (listOfRoleName.contains(roleName)) {
+			 listOfDefaultRole.add(roleName);
+		}
+		for (String roleN : listOfRoleName) {
+			if (!listOfDefaultRole.contains(roleN)) {
 				String sql1 = "INSERT INTO user_schema.user_authority (employee_id, role_id) SELECT " + employeeId
-						+ ", r.role_id FROM user_schema.role r WHERE r.role_name =" + "'" + roleName + "'";
+						+ ", r.role_id FROM user_schema.role r WHERE r.role_name =" + "'" + roleN + "'";
 				tableDataExtractor.insertDataFromTable(sql1);
-
 			}
 
 		}
-       
+		
 		return "Role data is added of user";
 
 	}
