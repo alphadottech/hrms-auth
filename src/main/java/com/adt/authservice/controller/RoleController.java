@@ -45,7 +45,7 @@ public class RoleController {
     @PreAuthorize("@auth.allow('CREATE_ROLE')")
 	@PostMapping("/createRole")
 	public ResponseEntity<?> createRole(@RequestBody Role role) {
-		if (role.getRole().matches("^[a-zA-Z_]*$")) {
+		if (role.getRole().matches("^[a-zA-Z_]*$")&&role.getRole()!=null&&!role.getRole().isEmpty()) {
 			return new ResponseEntity<>(roleService.savaRole(role), HttpStatus.OK);
 		}
 		return new ResponseEntity<>("Role name should contain only characters", HttpStatus.OK);
@@ -55,7 +55,7 @@ public class RoleController {
 	@Transactional
 	@PutMapping("/updateRole")
 	public ResponseEntity<?> updateRole(@RequestBody Role role) {
-		if (role.getRole().matches("^[a-zA-Z_]*$")) {
+    	if (role.getRole().matches("^[a-zA-Z_]*$")&&role.getRole()!=null&&!role.getRole().isEmpty()){
 			return new ResponseEntity<>(roleService.updateRole(role), HttpStatus.OK);
 		}
 		return new ResponseEntity<>("Role name should contain only characters", HttpStatus.OK);
