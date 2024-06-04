@@ -135,7 +135,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		public ResponseEntity<Object> handleAccessDeniedException(InvalidTokenRequestException ex) {
 			String message = ex.getMessage();
 			ApiError errors = new ApiError(HttpStatus.UNAUTHORIZED, message, ex);
-			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(), errors.getMessage(),
+			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(), "Your session has expired. Please log in again.",
 					errors.getTimestamp());
 			return new ResponseEntity<>(errorResponse, errors.getStatus());
 		}
