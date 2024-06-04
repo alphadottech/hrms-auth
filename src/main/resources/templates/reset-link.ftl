@@ -136,7 +136,7 @@
                                                 Hello ${userName},</h1>
                                             <p class=""
                                                style="margin: 20px 0; font-size: 16px; mso-line-height-rule: exactly; line-height: 24px;">
-                                            <span style="font-weight: 400;">Please click the below button to change your password for <strong>Customer Engagement App</strong>.The link will be valid for next ${expirationTime} minutes.</span><br/><br/><span
+                                            <span style="font-weight: 400;">To reset your password, please click the link below:</strong>.The link will be valid for next ${expirationTime} minutes.</span><br/><br/><span
                                                 style="font-weight: 400;">
                                             <table style="border: 0; width: 100%;" cellspacing="0" cellpadding="0">
                                                 <tbody>
@@ -177,7 +177,7 @@
                                                 question</a></p>
                                             <p class="tw-signoff"
                                                style="margin: 45px 0 5px; font-size: 16px; mso-line-height-rule: exactly; line-height: 24px;">
-                                                Our best, <br/> The Customer Engagement App team</p>
+                                                Our best, <br/> Alphadot Technologies team</p>
                                         </td>
                                     </tr>
                                     </tbody>

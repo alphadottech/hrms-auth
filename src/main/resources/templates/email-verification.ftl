@@ -54,7 +54,7 @@
                                         <td class="tw-card-header"
                                             style="padding: 5px 5px px; width: 366px; color: #ffff; text-decoration: none; font-family: sans-serif;"
                                             align="center"><span
-                                                style="font-weight: 600;">Email Confirmation Required</span></td>
+                                                style="font-weight: 600;">Thank you for registering with Alphadot Technologies.</span></td>
 
                                     </tr>
                                     </tbody>
@@ -70,7 +70,7 @@
                                                 Hello ${userName},</h1>
                                             <p class=""
                                                style="margin: 20px 0; font-size: 16px; mso-line-height-rule: exactly; line-height: 24px;">
-                                            <span style="font-weight: 400;">Thank you for joining <strong>Customer Engagement App</strong>, an efficient and smart solution to manage your health!</span><br/><br/><span
+                                            <span style="font-weight: 400;">Thank you for joining Alphadot Team</strong></span><br/><br/><span
                                                 style="font-weight: 400;">To complete the registration process, please confirm your email address to activate your account</span>
                                             <table style="border: 0; width: 100%;" cellspacing="0" cellpadding="0">
                                                 <tbody>
@@ -111,7 +111,7 @@
                                                 question</a></p>
                                             <p class="tw-signoff"
                                                style="margin: 45px 0 5px; font-size: 16px; mso-line-height-rule: exactly; line-height: 24px;">
-                                                Our best, <br/> The Customer Engagement App team</p>
+                                                our best, <br/> Alphadot Technologies team</p>
                                         </td>
                                     </tr>
                                     </tbody>
