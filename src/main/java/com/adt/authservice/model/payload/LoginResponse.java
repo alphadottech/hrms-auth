@@ -1,6 +1,7 @@
 package com.adt.authservice.model.payload;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.adt.authservice.model.Role;
@@ -11,6 +12,8 @@ public class LoginResponse {
 	private Long employeeId;
 	
 	private Set<Role> roles = new HashSet<>();
+	
+	private List<ApiNameResponse> apiNameResponse;
 
 	public Set<Role> getRoles() {
 		return roles;
@@ -35,5 +38,14 @@ public class LoginResponse {
 	public void setJwtAuthenticationResponse(JwtAuthenticationResponse jwtAuthenticationResponse) {
 		this.jwtAuthenticationResponse = jwtAuthenticationResponse;
 	}
+
+	public List<ApiNameResponse> getApiNameResponse() {
+		return apiNameResponse;
+	}
+
+	public void setApiNameResponse(List<ApiNameResponse> apiNameResponse) {
+		this.apiNameResponse = apiNameResponse;
+	}
+	
 
 }

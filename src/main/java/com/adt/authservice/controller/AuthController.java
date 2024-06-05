@@ -87,6 +87,9 @@ public class AuthController {
 
 	@Autowired
 	JwtTokenValidator jwtTokenValidator;
+	
+	@Autowired
+	ApiDetailsService apiDetailsService;
 
 	@Value("${-Dmy.port}")
 	private Integer serverPort;
@@ -155,6 +158,7 @@ public class AuthController {
 					loginResponse.setEmployeeId(customUserDetails.getId());
 					Set<Role> roles = customUserDetails.getRoles();
 					loginResponse.setRoles(roles);
+					loginResponse.setApiNameResponse(apiDetailsService.getListOfApiName(roles));
 					return ResponseEntity.ok(loginResponse);
 				})
 				.orElseThrow(() -> new UserLoginException("Couldn't create refresh token for: [" + loginRequest + "]"));
