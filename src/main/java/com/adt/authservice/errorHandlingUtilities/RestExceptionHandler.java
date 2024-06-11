@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.adt.authservice.exception.InvalidTokenRequestException;
 import com.adt.hrms.util.errorResponseUtilities.ApiError;
 import com.adt.hrms.util.errorResponseUtilities.ErrorResponse;
 import com.adt.hrms.util.errorResponseUtilities.FieldErrors;
@@ -128,5 +129,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 					errors.getTimestamp());
 			return new ResponseEntity<>(errorResponse, errors.getStatus());
 		}
+		
+		
+		@ExceptionHandler(InvalidTokenRequestException.class)
+		public ResponseEntity<Object> handleAccessDeniedException(InvalidTokenRequestException ex) {
+			String message = ex.getMessage();
+			ApiError errors = new ApiError(HttpStatus.UNAUTHORIZED, message, ex);
+			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(), "Your session has expired. Please log in again.",
+					errors.getTimestamp());
+			return new ResponseEntity<>(errorResponse, errors.getStatus());
+		}
+		
+		
+		
 
 }

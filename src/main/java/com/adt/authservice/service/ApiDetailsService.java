@@ -1,8 +1,11 @@
 package com.adt.authservice.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.adt.authservice.model.ApiDetails;
+import com.adt.authservice.model.Role;
+import com.adt.authservice.model.payload.ApiNameResponse;
 import com.adt.authservice.repository.ApiDetailsRepository;
 import com.adt.authservice.util.TableDataExtractor;
 
@@ -24,6 +29,9 @@ public class ApiDetailsService {
 
 	@Autowired
 	TableDataExtractor tableDataExtractor;
+	
+	    private static final int MAX_PAGE_SIZE = 50;
+	    private static final int DEFAULT_PAGE_SIZE = 10;
 
 	public String saveApiDetails(ApiDetails apiDetails) {
 		Optional<ApiDetails> apidetailsdata = apiDetailsRepository.findByApiName(apiDetails.getApiName());
@@ -59,7 +67,6 @@ public class ApiDetailsService {
 			apiDetailsRepository.deleteByApiName(apiName);
 
 			return "Data deleted successfully";
-
 		}
 		return "API data not present";
 	}
@@ -76,6 +83,9 @@ public class ApiDetailsService {
 	}
 
 	public Page<ApiDetails> getAllApiDetails(int page, int size) {
+		  if (size <= 0 || size > MAX_PAGE_SIZE) {
+              size = DEFAULT_PAGE_SIZE;
+          }
 		Pageable pageable = PageRequest.of(page, size);
 
 		return apiDetailsRepository.findAll(pageable);
@@ -101,6 +111,32 @@ public class ApiDetailsService {
 				+ "'" + roleName + "'";
 		List<Map<String, Object>> apiDate = tableDataExtractor.extractDataFromTable(sql);
 		return new ResponseEntity<>(apiDate, HttpStatus.OK);
+	}
+	
+	public List<ApiNameResponse> getListOfApiName(Set<Role> roles) {
+		if (roles == null || roles.isEmpty())
+			return Collections.emptyList();
+
+		String roleNamesInSql = roles.stream().map(Role::getRole).map(roleName -> "'" + roleName + "'")
+				.collect(Collectors.joining(", "));
+
+		String sql = "SELECT r.role_name, ad.api_name FROM av_schema.api_details ad "
+				+ "JOIN av_schema.api_mapping am ON ad.api_id = am.api_id "
+				+ "JOIN user_schema.role r ON am.role_id = r.role_id " + "WHERE r.role_name IN (" + roleNamesInSql
+				+ ")";
+
+		List<Map<String, Object>> apiData = tableDataExtractor.extractDataFromTable(sql);
+
+		Map<String, Set<String>> roleApiMap = apiData.stream()
+				.collect(Collectors.groupingBy(row -> String.valueOf(row.get("role_name")),
+						Collectors.mapping(row -> String.valueOf(row.get("api_name")), Collectors.toSet())));
+
+		return roles.stream().map(role -> {
+			ApiNameResponse response = new ApiNameResponse();
+			response.setRoleName(role.getRole());
+			response.setPermission(roleApiMap.getOrDefault(role.getRole(), Collections.emptySet()));
+			return response;
+		}).collect(Collectors.toList());
 	}
 
 }
