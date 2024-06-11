@@ -156,6 +156,7 @@ public class AuthController {
 					LoginResponse loginResponse = new LoginResponse();
 					loginResponse.setJwtAuthenticationResponse(jwtAuthenticationResponse);
 					loginResponse.setEmployeeId(customUserDetails.getId());
+					loginResponse.setEmployeeName(customUserDetails.getFirstName()+" "+customUserDetails.getLastName());
 					Set<Role> roles = customUserDetails.getRoles();
 					loginResponse.setRoles(roles);
 					loginResponse.setApiNameResponse(apiDetailsService.getListOfApiName(roles));

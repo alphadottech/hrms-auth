@@ -10,7 +10,17 @@ public class LoginResponse {
 	private JwtAuthenticationResponse jwtAuthenticationResponse;
 
 	private Long employeeId;
-	
+
+	private String employeeName;
+
+	public String getEmployeeName() {
+		return employeeName;
+	}
+
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
+
 	private Set<Role> roles = new HashSet<>();
 	
 	private List<ApiNameResponse> apiNameResponse;
