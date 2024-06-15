@@ -180,6 +180,7 @@ public class AuthController {
 	 * Entry point for the user registration process. On successful registration,
 	 * publish an event to generate email verification token
 	 */
+//	@PreAuthorize("hasRole('ADMIN')")
 	@PreAuthorize("@auth.allow('REGISTER_USER')")
 	@PostMapping("/register")
 	public ResponseEntity registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {

@@ -16,7 +16,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.adt.authservice.model.audit.DateAudit;
 import com.adt.authservice.validation.annotation.NullOrNotBlank;
-import org.springframework.transaction.annotation.Transactional;
 
 @Table(catalog = "EmployeeDB", schema = "user_schema", name = "_EMPLOYEE")
 @Entity(name = "_EMPLOYEE")
@@ -54,10 +53,10 @@ public class User extends DateAudit implements UserDetails {
 	@Column(name = "IS_ACTIVE", nullable = false)
 	private Boolean active;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
 	@JoinTable(name = "USER_AUTHORITY", schema = "user_schema", joinColumns = {
-			@JoinColumn(name = "EMPLOYEE_ID", referencedColumnName = "EMPLOYEE_ID")}, inverseJoinColumns = {
-			@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")})
+			@JoinColumn(name = "EMPLOYEE_ID", referencedColumnName = "EMPLOYEE_ID") }, inverseJoinColumns = {
+			@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID") })
 	private Set<Role> roles = new HashSet<>();
 
 	@Column(name = "IS_EMAIL_VERIFIED", nullable = false)
@@ -71,6 +70,7 @@ public class User extends DateAudit implements UserDetails {
 
 	@Transient
 	private String message;
+
 	public User() {
 		super();
 	}
@@ -180,6 +180,7 @@ public class User extends DateAudit implements UserDetails {
 	public void setEmailVerified(Boolean emailVerified) {
 		isEmailVerified = emailVerified;
 	}
+
 	@Override
 	public String toString() {
 		return "User{" + "id=" + id + ", email='" + email + '\'' + ", username='" + username + '\'' + ", password='"
@@ -217,4 +218,3 @@ public class User extends DateAudit implements UserDetails {
 		return false;
 	}
 }
-

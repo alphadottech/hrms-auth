@@ -44,8 +44,6 @@ public class UserService {
 	private final UserDeviceService userDeviceService;
 	private final RefreshTokenService refreshTokenService;
 
-	static String originalPassword = null;
-
 	@Autowired
 	public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, RoleService roleService,
 					   UserDeviceService userDeviceService, RefreshTokenService refreshTokenService) {
@@ -55,6 +53,7 @@ public class UserService {
 		this.userDeviceService = userDeviceService;
 		this.refreshTokenService = refreshTokenService;
 	}
+	static String originalPassword = null;
 
 	/**
 	 * Finds a user in the database by username
@@ -145,7 +144,7 @@ public class UserService {
 				orElseThrow(() -> new UserLogoutException(logOutRequest.getDeviceInfo().getDeviceId(),
 						"Invalid device Id supplied. No matching device found for the given user "));
 
-		userDeviceList.forEach(userDevice -> {
+		userDeviceList.forEach(userDevice->{
 			LOGGER.info("Removing refresh token associated with device [" + userDevice + "]");
 			refreshTokenService.deleteById(userDevice.getRefreshToken().getId());
 		});

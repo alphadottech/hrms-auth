@@ -58,8 +58,10 @@ public class RegistrationRequest {
         this.confirmPassword = confirmPassword;
     }
 
-    public RegistrationRequest(){
+    public RegistrationRequest() {
     }
+
+
 
     public String getEmail() {
         return email;
@@ -76,6 +78,7 @@ public class RegistrationRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+
 
 
 }
