@@ -15,44 +15,50 @@ package com.adt.authservice.model.payload;
 
 import java.util.Set;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.adt.authservice.model.Role;
 import com.adt.authservice.validation.annotation.NullOrNotBlank;
+import lombok.Data;
 
+@Data
 public class RegistrationRequest {
 
-    @NullOrNotBlank(message = "Registration username can be null but not blank")
-    private String username;
+    @NotBlank(message = "FirstName cannot be null or blank")
+    private String firstName;
 
-    @NullOrNotBlank(message = "Registration email can be null but not blank")
+    private String middleName;
+
+    @NotBlank(message = "LastName cannot be null or blank")
+    private String lastName;
+
+    @NotBlank(message = "Registration email can be null but not blank")
     private String email;
 
-    @NotNull(message = "Registration password cannot be null")
+    @NotBlank(message = "Registration password cannot be null")
     private String password;
-    
-    @NotNull(message = "Specify user role")
-    private Set<Role> roles;
 
-    public RegistrationRequest(String username, String email,
-    		@NotNull(message = "Registration password cannot be null") String password,
-			@NotNull(message = "Specify user role") Set<Role> roles) {
-    	super();
-		this.username = username;
-		this.email = email;
-		this.password = password;
-		this.roles = roles;
+    @NotBlank(message = "Registration password cannot be null")
+    private String confirmPassword;
+
+    public RegistrationRequest(@NotNull(message = "FirstName cannot be null")String firstName,
+                               String middleName,
+                               @NotNull(message = "LastName cannot be null")String lastName,
+                               String email,
+                               @NotNull(message = "Registration password cannot be null") String password,
+                               @NotNull(message = "Registration password cannot be null") String confirmPassword)
+    {
+        super();
+        this.firstName = firstName;
+        this.middleName=middleName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.confirmPassword = confirmPassword;
     }
 
-    public RegistrationRequest() {
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    public RegistrationRequest(){
     }
 
     public String getEmail() {
@@ -70,12 +76,6 @@ public class RegistrationRequest {
     public void setPassword(String password) {
         this.password = password;
     }
-    
-    public Set<Role> getRoles() {
-  		return roles;
-  	}
-  	public void setRoles(Set<Role> roles) {
-  		this.roles = roles;
-  	}
+
 
 }

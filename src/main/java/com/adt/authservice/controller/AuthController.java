@@ -13,13 +13,17 @@
  */
 package com.adt.authservice.controller;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import com.adt.authservice.model.User;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -77,7 +82,7 @@ import com.adt.authservice.service.RoleService;
 public class AuthController {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-	
+
 	private final AuthService authService;
 	private final JwtTokenProvider tokenProvider;
 	private final ApplicationEventPublisher applicationEventPublisher;
@@ -87,7 +92,7 @@ public class AuthController {
 
 	@Autowired
 	JwtTokenValidator jwtTokenValidator;
-	
+
 	@Autowired
 	ApiDetailsService apiDetailsService;
 
@@ -109,9 +114,15 @@ public class AuthController {
 	@Value("${-UI.context}")
 	private String context;
 
+	@Value("${app.velocity.templates.location}")
+	private String basePackagePath;
+
+	@Autowired
+	private Configuration freemarkerConfig;
+
 	@Autowired
 	public AuthController(AuthService authService, JwtTokenProvider tokenProvider,
-			ApplicationEventPublisher applicationEventPublisher) {
+						  ApplicationEventPublisher applicationEventPublisher) {
 		this.authService = authService;
 		this.tokenProvider = tokenProvider;
 		this.applicationEventPublisher = applicationEventPublisher;
@@ -169,7 +180,7 @@ public class AuthController {
 	 * Entry point for the user registration process. On successful registration,
 	 * publish an event to generate email verification token
 	 */
-//	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("@auth.allow('REGISTER_USER')")
 	@PostMapping("/register")
 	public ResponseEntity registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
 		return authService.registerUser(registrationRequest).map(user -> {
@@ -214,7 +225,7 @@ public class AuthController {
 	 * changing the password to the user's mail through the event.
 	 */
 
-	
+
 	@PostMapping("/password/reset")
 	public ResponseEntity resetPassword(@Valid @RequestBody PasswordResetRequest passwordResetRequest) {
 		return authService.resetPassword(passwordResetRequest).map(changedUser -> {
@@ -231,11 +242,20 @@ public class AuthController {
 	 * registration. If token is invalid or token is expired, report error.
 	 */
 	@GetMapping("/registrationConfirmation")
-	public ResponseEntity confirmRegistration(@RequestParam("token") String token) {
-		return authService.confirmEmailRegistration(token)
-				.map(user -> ResponseEntity.ok(new ApiResponse(true, "User verified successfully")))
-				.orElseThrow(() -> new InvalidTokenRequestException("Email Verification Token", token,
-						"Failed to confirm. Please generate a new email verification request"));
+	public ResponseEntity<String> confirmRegistration(@RequestParam("token") String token) throws TemplateException, MessagingException, IOException {
+		Optional<User> optionalUser = authService.confirmEmailRegistration(token);
+		freemarkerConfig.setClassForTemplateLoading(getClass(), basePackagePath);
+		Template template = freemarkerConfig.getTemplate("message.ftl");
+		Map<String, Object> model = new HashMap<>();
+		if (optionalUser.isPresent()) {
+			User user = optionalUser.get();
+			model.put("Message", user.getMessage());
+		} else {
+			throw new InvalidTokenRequestException("Email Verification Token", token,
+					"Failed to confirm email. Please generate a new email verification request.");
+		}
+		String emailContent = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+		return ResponseEntity.ok(emailContent);
 	}
 
 	/**
@@ -278,9 +298,9 @@ public class AuthController {
 		}).orElseThrow(() -> new TokenRefreshException(tokenRefreshRequest.getRefreshToken(),
 				"Unexpected error during token refresh. Please ̥and login again."));
 	}
-	
-	
-	
-	
+
+
+
+
 
 }

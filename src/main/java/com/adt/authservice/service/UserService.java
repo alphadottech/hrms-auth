@@ -44,9 +44,11 @@ public class UserService {
 	private final UserDeviceService userDeviceService;
 	private final RefreshTokenService refreshTokenService;
 
+	static String originalPassword = null;
+
 	@Autowired
 	public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, RoleService roleService,
-			UserDeviceService userDeviceService, RefreshTokenService refreshTokenService) {
+					   UserDeviceService userDeviceService, RefreshTokenService refreshTokenService) {
 		this.passwordEncoder = passwordEncoder;
 		this.userRepository = userRepository;
 		this.roleService = roleService;
@@ -101,13 +103,18 @@ public class UserService {
 	 */
 	public User createUser(RegistrationRequest registerRequest) {
 		User newUser = new User();
+		newUser.setFirstName(registerRequest.getFirstName());
+		newUser.setMiddleName(registerRequest.getMiddleName());
+		newUser.setLastName(registerRequest.getLastName());
 		newUser.setEmail(registerRequest.getEmail());
+		newUser.setPassword(registerRequest.getPassword());
+		newUser.setConfirmPassword(registerRequest.getConfirmPassword());
 		newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-		newUser.setUsername(registerRequest.getUsername());
 		newUser.addRoles(getRolesForNewUser(true));
 //		newUser.addRoles(registerRequest.getRoles());
 		newUser.setActive(true);
 		newUser.setEmailVerified(false);
+		originalPassword=registerRequest.getPassword();
 		return newUser;
 	}
 
@@ -130,15 +137,15 @@ public class UserService {
 	public void logoutUser(CustomUserDetails customUserDetails, LogOutRequest logOutRequest) {
 		String deviceId = logOutRequest.getDeviceInfo().getDeviceId();
 		List<UserDevice> userDeviceList = userDeviceService.findDeviceByUserId(customUserDetails.getId(), deviceId)
-											.stream()
-											.filter(device -> device.getDeviceId().equals(deviceId))
-											.collect(Collectors.toList());
-				
-		Optional.of(userDeviceList).		
+				.stream()
+				.filter(device -> device.getDeviceId().equals(deviceId))
+				.collect(Collectors.toList());
+
+		Optional.of(userDeviceList).
 				orElseThrow(() -> new UserLogoutException(logOutRequest.getDeviceInfo().getDeviceId(),
 						"Invalid device Id supplied. No matching device found for the given user "));
 
-		userDeviceList.forEach(userDevice->{
+		userDeviceList.forEach(userDevice -> {
 			LOGGER.info("Removing refresh token associated with device [" + userDevice + "]");
 			refreshTokenService.deleteById(userDevice.getRefreshToken().getId());
 		});

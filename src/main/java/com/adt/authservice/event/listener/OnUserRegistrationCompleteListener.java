@@ -35,7 +35,7 @@ import freemarker.template.TemplateException;
 @Component
 public class OnUserRegistrationCompleteListener implements ApplicationListener<OnUserRegistrationCompleteEvent> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final EmailVerificationTokenService emailVerificationTokenService;
     private final MailService mailService;
 
@@ -67,7 +67,7 @@ public class OnUserRegistrationCompleteListener implements ApplicationListener<O
         String emailConfirmationUrl = event.getRedirectUrl().queryParam("token", token).toUriString();
 
         try {
-            mailService.sendEmailVerification(emailConfirmationUrl, recipientAddress);
+            mailService.sendEmailVerification(emailConfirmationUrl, user);
         } catch (IOException | TemplateException | MessagingException e) {
             LOGGER.error("Exception: {}",e);
             throw new MailSendException(recipientAddress, "Email Verification");

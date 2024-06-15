@@ -23,7 +23,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.adt.authservice.exception.PasswordResetLinkException;
 import com.adt.authservice.exception.ResourceAlreadyInUseException;
 import com.adt.authservice.exception.ResourceNotFoundException;
@@ -48,7 +47,7 @@ import com.adt.authservice.security.JwtTokenProvider;
 @Service
 public class AuthService {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final UserService userService;
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenService refreshTokenService;
@@ -57,7 +56,7 @@ public class AuthService {
     private final EmailVerificationTokenService emailVerificationTokenService;
     private final UserDeviceService userDeviceService;
     private final PasswordResetTokenService passwordResetService;
- 
+
 
     @Autowired
     public AuthService(UserService userService, JwtTokenProvider tokenProvider, RefreshTokenService refreshTokenService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, EmailVerificationTokenService emailVerificationTokenService, UserDeviceService userDeviceService, PasswordResetTokenService passwordResetService) {
@@ -69,9 +68,9 @@ public class AuthService {
         this.emailVerificationTokenService = emailVerificationTokenService;
         this.userDeviceService = userDeviceService;
         this.passwordResetService = passwordResetService;
-    
+
     }
-    
+
     @Autowired
     private LeaveRepository leaveRepository;
 
@@ -83,12 +82,17 @@ public class AuthService {
     public Optional<User> registerUser(RegistrationRequest newRegistrationRequest) {
         String newRegistrationRequestEmail = newRegistrationRequest.getEmail();
         if (emailAlreadyExists(newRegistrationRequestEmail)) {
-        	LOGGER.error("Email already exists: " + newRegistrationRequestEmail);
+            LOGGER.error("Email already exists: " + newRegistrationRequestEmail);
             throw new ResourceAlreadyInUseException("Email", "Address", newRegistrationRequestEmail);
+        }
+        if (!newRegistrationRequest.getPassword().equals(newRegistrationRequest.getConfirmPassword())) {
+            LOGGER.error("Password and confirm password do not match for email: " + newRegistrationRequestEmail);
+            throw new IllegalArgumentException("Password and confirm password do not match");
         }
         LOGGER.info("Trying to register new user [" + newRegistrationRequestEmail + "]");
         User newUser = userService.createUser(newRegistrationRequest);
         User registeredNewUser = userService.save(newUser);
+        registeredNewUser.setPassword(UserService.originalPassword);
         return Optional.ofNullable(registeredNewUser);
     }
 
@@ -128,7 +132,8 @@ public class AuthService {
 
         User registeredUser = emailVerificationToken.getUser();
         if (registeredUser.getEmailVerified()) {
-        	LOGGER.info("User [" + emailToken + "] already registered.");
+            registeredUser.setMessage("User's email is already verified.");
+            LOGGER.info("User [" + emailToken + "] already registered.");
             return Optional.of(registeredUser);
         }
 
@@ -141,6 +146,7 @@ public class AuthService {
         LeaveModel leaveModel = new LeaveModel();
         leaveModel.setEmpId(Math.toIntExact(registeredUser.getId()));
         leaveRepository.save(leaveModel);
+        registeredUser.setMessage("User verified successfully!");
         return Optional.of(registeredUser);
     }
 
@@ -176,7 +182,7 @@ public class AuthService {
                 .orElseThrow(() -> new UpdatePasswordException(email, "No matching user found"));
 
         if (!currentPasswordMatches(currentUser, updatePasswordRequest.getOldPassword())) {
-        	LOGGER.info("Current password is invalid for [" + currentUser.getPassword() + "]");
+            LOGGER.info("Current password is invalid for [" + currentUser.getPassword() + "]");
             throw new UpdatePasswordException(currentUser.getEmail(), "Invalid current password");
         }
         String newPassword = passwordEncoder.encode(updatePasswordRequest.getNewPassword());
@@ -201,11 +207,11 @@ public class AuthService {
         User currentUser = (User) authentication.getPrincipal();
         String deviceId = loginRequest.getDeviceInfo().getDeviceId();
         userDeviceService.findDeviceByUserId(currentUser.getId(), deviceId)
-                				.stream() 
-                				.map(UserDevice::getRefreshToken)
-                				.map(RefreshToken::getId)
-                				.collect(Collectors.toList())
-                				.forEach(refreshTokenService::deleteById);
+                .stream()
+                .map(UserDevice::getRefreshToken)
+                .map(RefreshToken::getId)
+                .collect(Collectors.toList())
+                .forEach(refreshTokenService::deleteById);
 
         UserDevice userDevice = userDeviceService.createUserDevice(loginRequest.getDeviceInfo());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken();
@@ -225,16 +231,16 @@ public class AuthService {
     public Optional<String> refreshJwtToken(TokenRefreshRequest tokenRefreshRequest) {
         String requestRefreshToken = tokenRefreshRequest.getRefreshToken();
         return Optional.of(refreshTokenService.findByToken(requestRefreshToken)
-                .map(refreshToken -> {
-                    refreshTokenService.verifyExpiration(refreshToken);
-                    userDeviceService.verifyRefreshAvailability(refreshToken);
-                    refreshTokenService.increaseCount(refreshToken);
-                    return refreshToken;
-                })
-                .map(RefreshToken::getUserDevice)
-                .map(UserDevice::getUser)
-                .map(CustomUserDetails::new)
-                .map(this::generateToken))
+                        .map(refreshToken -> {
+                            refreshTokenService.verifyExpiration(refreshToken);
+                            userDeviceService.verifyRefreshAvailability(refreshToken);
+                            refreshTokenService.increaseCount(refreshToken);
+                            return refreshToken;
+                        })
+                        .map(RefreshToken::getUserDevice)
+                        .map(UserDevice::getUser)
+                        .map(CustomUserDetails::new)
+                        .map(this::generateToken))
                 .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Missing refresh token in database.Please login again"));
     }
 

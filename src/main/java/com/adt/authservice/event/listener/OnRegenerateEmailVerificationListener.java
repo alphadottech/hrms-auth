@@ -35,7 +35,7 @@ import freemarker.template.TemplateException;
 @Component
 public class OnRegenerateEmailVerificationListener implements ApplicationListener<OnRegenerateEmailVerificationEvent> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final MailService mailService;
 
     @Autowired
@@ -63,7 +63,7 @@ public class OnRegenerateEmailVerificationListener implements ApplicationListene
         String emailConfirmationUrl =
                 event.getRedirectUrl().queryParam("token", emailVerificationToken.getToken()).toUriString();
         try {
-            mailService.sendEmailVerification(emailConfirmationUrl, recipientAddress);
+            mailService.sendEmailVerification(emailConfirmationUrl, user);
         } catch (IOException | TemplateException | MessagingException e) {
             LOGGER.error("Exception: {}",e);
             throw new MailSendException(recipientAddress, "Email Verification");
