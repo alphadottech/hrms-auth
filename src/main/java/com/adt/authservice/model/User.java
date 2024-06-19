@@ -4,21 +4,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import lombok.Data;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Proxy;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,6 +20,7 @@ import com.adt.authservice.validation.annotation.NullOrNotBlank;
 @Table(catalog = "EmployeeDB", schema = "user_schema", name = "_EMPLOYEE")
 @Entity(name = "_EMPLOYEE")
 @Proxy(lazy = false)
+@Data
 public class User extends DateAudit implements UserDetails {
 
 	@Id
@@ -65,11 +56,20 @@ public class User extends DateAudit implements UserDetails {
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
 	@JoinTable(name = "USER_AUTHORITY", schema = "user_schema", joinColumns = {
 			@JoinColumn(name = "EMPLOYEE_ID", referencedColumnName = "EMPLOYEE_ID") }, inverseJoinColumns = {
-					@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID") })
+			@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID") })
 	private Set<Role> roles = new HashSet<>();
 
 	@Column(name = "IS_EMAIL_VERIFIED", nullable = false)
 	private Boolean isEmailVerified;
+
+	@Column(name = "MIDDLE_NAME")
+	private String middleName;
+
+	@Column(name = "CONFIRM_PASSWORD", nullable = false)
+	private String confirmPassword;
+
+	@Transient
+	private String message;
 
 	public User() {
 		super();
@@ -81,8 +81,10 @@ public class User extends DateAudit implements UserDetails {
 			username = user.getUsername();
 			password = user.getPassword();
 			firstName = user.getFirstName();
+			middleName = user.getMiddleName();
 			lastName = user.getLastName();
 			email = user.getEmail();
+			confirmPassword = user.getConfirmPassword();
 			active = user.getActive();
 			roles = user.getRoles();
 			isEmailVerified = user.getEmailVerified();
