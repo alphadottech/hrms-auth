@@ -14,6 +14,7 @@
 package com.adt.authservice.service;
 
 import com.adt.authservice.model.Mail;
+import com.adt.authservice.model.User;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -52,14 +53,16 @@ public class MailService {
         this.templateConfiguration = templateConfiguration;
     }
 
-    public void sendEmailVerification(String emailVerificationUrl, String to)
+    public void sendEmailVerification(String emailVerificationUrl, User user)
             throws IOException, TemplateException, MessagingException {
         Mail mail = new Mail();
         mail.setSubject("Email Verification [Team CEP]");
-        mail.setTo(to);
+        mail.setTo(user.getEmail());
         mail.setFrom(mailFrom);
-        mail.getModel().put("userName", to);
-        mail.getModel().put("userEmailTokenVerificationLink", emailVerificationUrl);
+        mail.getModel().put("password",user.getPassword());
+        mail.getModel().put("emailId",user.getEmail());
+        mail.getModel().put("firstName",user.getFirstName());
+        mail.getModel().put("userEmailTokenVerificationLink",emailVerificationUrl);
 
         templateConfiguration.setClassForTemplateLoading(getClass(), basePackagePath);
         Template template = templateConfiguration.getTemplate("email-verification.ftl");
