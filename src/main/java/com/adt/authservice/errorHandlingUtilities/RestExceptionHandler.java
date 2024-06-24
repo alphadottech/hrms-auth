@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -141,6 +142,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		}
 		
 		
+		@ExceptionHandler(BadCredentialsException.class)
+		public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex) {
+			String message = ex.getMessage();
+			ApiError errors = new ApiError(HttpStatus.UNAUTHORIZED, message, ex);
+			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(), message,
+					errors.getTimestamp());
+			return new ResponseEntity<>(errorResponse, errors.getStatus());
+		}
+		 
 		
 
 }
