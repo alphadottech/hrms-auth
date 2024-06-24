@@ -154,7 +154,7 @@ public class AuthController {
 	public ResponseEntity authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 		Authentication authentication = authService.authenticateUser(loginRequest)
 				.orElseThrow(() -> new UserLoginException("Couldn't login user [" + loginRequest + "]"));
-
+		
 		CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 		LOGGER.info("Logged in User returned [API]: " + customUserDetails.getUsername());
 		SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -169,8 +169,7 @@ public class AuthController {
 					loginResponse.setEmployeeId(customUserDetails.getId());
 					loginResponse.setEmployeeName(customUserDetails.getFirstName()+" "+customUserDetails.getLastName());
 					Set<Role> roles = customUserDetails.getRoles();
-					loginResponse.setRoles(roles);
-					loginResponse.setApiNameResponse(apiDetailsService.getListOfApiName(roles));
+					loginResponse.setRoles(apiDetailsService.getListOfApiName(roles));
 					return ResponseEntity.ok(loginResponse);
 				})
 				.orElseThrow(() -> new UserLoginException("Couldn't create refresh token for: [" + loginRequest + "]"));
