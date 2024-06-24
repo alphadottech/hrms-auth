@@ -23,7 +23,6 @@ public class LoginResponse {
 
 	private Set<Role> roles = new HashSet<>();
 	
-	private List<ApiNameResponse> apiNameResponse;
 
 	public Set<Role> getRoles() {
 		return roles;
@@ -49,13 +48,6 @@ public class LoginResponse {
 		this.jwtAuthenticationResponse = jwtAuthenticationResponse;
 	}
 
-	public List<ApiNameResponse> getApiNameResponse() {
-		return apiNameResponse;
-	}
-
-	public void setApiNameResponse(List<ApiNameResponse> apiNameResponse) {
-		this.apiNameResponse = apiNameResponse;
-	}
 	
 
 }

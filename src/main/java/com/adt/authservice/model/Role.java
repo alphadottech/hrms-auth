@@ -40,6 +40,9 @@ public class Role {
 	
 	@Column(name = "DEFAULT_ROLE")
 	private boolean defaultRole;
+	
+	@Transient
+	private Set<String> permission;
 
 	@ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })
 	@JsonIgnore
@@ -87,5 +90,17 @@ public class Role {
 	public void setDefaultRole(boolean defaultRole) {
 		this.defaultRole = defaultRole;
 	}
+
+
+	public Set<String> getPermission() {
+		return permission;
+	}
+
+
+	public void setPermission(Set<String> permission) {
+		this.permission = permission;
+	}
+	
+	
 	
 }
