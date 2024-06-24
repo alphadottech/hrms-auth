@@ -156,7 +156,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		public ResponseEntity<Object> handleLockedException(LockedException ex) {
 			String message = ex.getMessage();
 			ApiError errors = new ApiError(HttpStatus.UNAUTHORIZED, message, ex);
-			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(), "Your email address has not been verified. Please check your inbox for a verification email",
+			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(),
+					"Your email address has not been verified. Please check your inbox for a verification email",
 					errors.getTimestamp());
 			return new ResponseEntity<>(errorResponse, errors.getStatus());
 		}
