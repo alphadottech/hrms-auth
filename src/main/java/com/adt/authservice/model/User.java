@@ -20,7 +20,6 @@ import com.adt.authservice.validation.annotation.NullOrNotBlank;
 @Table(catalog = "EmployeeDB", schema = "user_schema", name = "_EMPLOYEE")
 @Entity(name = "_EMPLOYEE")
 @Proxy(lazy = false)
-@Data
 public class User extends DateAudit implements UserDetails {
 
 	@Id
@@ -181,11 +180,37 @@ public class User extends DateAudit implements UserDetails {
 		isEmailVerified = emailVerified;
 	}
 
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+
+	public String getConfirmPassword() {
+		return confirmPassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+		this.confirmPassword = confirmPassword;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	
 	@Override
 	public String toString() {
-		return "User{" + "id=" + id + ", email='" + email + '\'' + ", username='" + username + '\'' + ", password='"
-				+ password + '\'' + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", active="
-				+ active + ", roles=" + roles + ", isEmailVerified=" + isEmailVerified + '}';
+		return "User [id=" + id + ", email=" + email + ", username=" + username + ", password=" + password
+				+ ", firstName=" + firstName + ", lastName=" + lastName + ", active=" + active + ", roles=" + roles
+				+ ", isEmailVerified=" + isEmailVerified + ", middleName=" + middleName + ", confirmPassword="
+				+ confirmPassword + ", message=" + message + "]";
 	}
 
 	@Override
