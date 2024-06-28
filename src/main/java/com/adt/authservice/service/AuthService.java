@@ -45,6 +45,8 @@ import com.adt.authservice.model.token.RefreshToken;
 import com.adt.authservice.repository.LeaveRepository;
 import com.adt.authservice.security.JwtTokenProvider;
 
+import javax.validation.ValidationException;
+
 @Service
 public class AuthService {
 
@@ -81,6 +83,7 @@ public class AuthService {
      * @return A user object if successfully created
      */
     public Optional<User> registerUser(RegistrationRequest newRegistrationRequest) {
+        validateRegistrationRequest(newRegistrationRequest);
         String newRegistrationRequestEmail = newRegistrationRequest.getEmail();
         if (emailAlreadyExists(newRegistrationRequestEmail)) {
             LOGGER.error("Email already exists: " + newRegistrationRequestEmail);
@@ -97,6 +100,34 @@ public class AuthService {
         return Optional.ofNullable(registeredNewUser);
     }
 
+    private void validateRegistrationRequest(RegistrationRequest request) {
+        String[][] nameFields = {
+                {request.getFirstName(), "First name"},
+                {request.getMiddleName(), "Middle name"},
+                {request.getLastName(), "Last name"}
+        };
+
+        for (String[] field : nameFields) {
+            String name = field[0];
+            String fieldName = field[1];
+            if (name.length() > 30) {
+                throw new ValidationException(fieldName + " must be at most 30 characters long");
+            }
+            if (!name.matches("^[a-zA-Z]+$")) {
+                throw new ValidationException(fieldName + " must contain only letters");
+            }
+        }
+
+        String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
+        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#\\$%\\^&\\*]).+$";
+
+        if (!request.getEmail().matches(emailPattern)) {
+            throw new ValidationException("Email must be a valid email address");
+        }
+        if (!request.getPassword().matches(passwordPattern) || !request.getConfirmPassword().matches(passwordPattern)) {
+            throw new ValidationException("Password and Confirm Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character");
+        }
+    }
     /**
      * Checks if the given email already exists in the database repository or not
      *
