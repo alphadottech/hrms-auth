@@ -51,6 +51,9 @@ public class User extends DateAudit implements UserDetails {
 
 	@Column(name = "IS_ACTIVE", nullable = false)
 	private Boolean active;
+	
+	@Column(name = "ADT_ID",nullable = false,unique = true)
+	private String adtId;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
 	@JoinTable(name = "USER_AUTHORITY", schema = "user_schema", joinColumns = {
@@ -87,6 +90,8 @@ public class User extends DateAudit implements UserDetails {
 			active = user.getActive();
 			roles = user.getRoles();
 			isEmailVerified = user.getEmailVerified();
+			adtId=user.getAdtId();
+			
 		}
 	}
 
@@ -205,12 +210,22 @@ public class User extends DateAudit implements UserDetails {
 	}
 
 	
+	
+	public String getAdtId() {
+		return adtId;
+	}
+
+	public void setAdtId(String adtId) {
+		this.adtId = adtId;
+	}
+
+	
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", email=" + email + ", username=" + username + ", password=" + password
-				+ ", firstName=" + firstName + ", lastName=" + lastName + ", active=" + active + ", roles=" + roles
-				+ ", isEmailVerified=" + isEmailVerified + ", middleName=" + middleName + ", confirmPassword="
-				+ confirmPassword + ", message=" + message + "]";
+				+ ", firstName=" + firstName + ", lastName=" + lastName + ", active=" + active + ", adtId=" + adtId
+				+ ", roles=" + roles + ", isEmailVerified=" + isEmailVerified + ", middleName=" + middleName
+				+ ", confirmPassword=" + confirmPassword + ", message=" + message + "]";
 	}
 
 	@Override

@@ -110,16 +110,19 @@ public class AuthService {
         for (String[] field : nameFields) {
             String name = field[0];
             String fieldName = field[1];
-            if (name.length() > 30) {
-                throw new ValidationException(fieldName + " must be at most 30 characters long");
-            }
-            if (!name.matches("^[a-zA-Z]+$")) {
-                throw new ValidationException(fieldName + " must contain only letters");
+
+            if (name != null) {
+                if (name.length() > 30) {
+                    throw new ValidationException(fieldName + " must be at most 30 characters long");
+                }
+                if (!name.matches("^[a-zA-Z]*$")) {
+                    throw new ValidationException(fieldName + " must contain only letters");
+                }
             }
         }
 
         String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
-        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#\\$%\\^&\\*]).+$";
+        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).+$";
 
         if (!request.getEmail().matches(emailPattern)) {
             throw new ValidationException("Email must be a valid email address");
