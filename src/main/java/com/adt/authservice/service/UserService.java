@@ -15,6 +15,7 @@ package com.adt.authservice.service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.adt.authservice.exception.UserLogoutException;
 import com.adt.authservice.model.CustomUserDetails;
@@ -33,6 +35,7 @@ import com.adt.authservice.model.UserDevice;
 import com.adt.authservice.model.payload.LogOutRequest;
 import com.adt.authservice.model.payload.RegistrationRequest;
 import com.adt.authservice.repository.UserRepository;
+import com.adt.authservice.util.TableDataExtractor;
 
 @Service
 public class UserService {
@@ -43,6 +46,8 @@ public class UserService {
 	private final RoleService roleService;
 	private final UserDeviceService userDeviceService;
 	private final RefreshTokenService refreshTokenService;
+	@Autowired
+	private TableDataExtractor dataExtractor;
 
 	@Autowired
 	public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, RoleService roleService,
@@ -110,6 +115,7 @@ public class UserService {
 		newUser.setConfirmPassword(registerRequest.getConfirmPassword());
 		newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 		newUser.addRoles(getRolesForNewUser(true));
+		newUser.setAdtId(generateAdtId());
 //		newUser.addRoles(registerRequest.getRoles());
 		newUser.setActive(true);
 		newUser.setEmailVerified(false);
@@ -148,5 +154,20 @@ public class UserService {
 			LOGGER.info("Removing refresh token associated with device [" + userDevice + "]");
 			refreshTokenService.deleteById(userDevice.getRefreshToken().getId());
 		});
+	}
+	@Transactional
+	public synchronized String generateAdtId() {
+		String prefix = "ADT00000";
+		String sql = "SELECT nextval('user_schema.adt_id_seq')";
+		List<Map<String, Object>> adtIdData = dataExtractor.extractDataFromTable(sql);
+		String apiId = "";
+		for (Map<String, Object> adt : adtIdData) {
+			apiId = String.valueOf(adt.get("nextval"));
+		}
+		StringBuilder zeroPrefixBuilder = new StringBuilder();
+		zeroPrefixBuilder.append(prefix);
+	    int start=prefix.length() -apiId.length();
+	    String idAdt= zeroPrefixBuilder.replace(start, prefix.length(), apiId).toString();   
+	    return idAdt;
 	}
 }
