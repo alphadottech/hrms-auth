@@ -182,6 +182,7 @@ public class AuthController {
 	@PreAuthorize("@auth.allow('REGISTER_USER')")
 	@PostMapping("/register")
 	public ResponseEntity registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
+		LOGGER.info("name" +registrationRequest.getFirstName());
 		return authService.registerUser(registrationRequest).map(user -> {
 			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
 					.scheme(scheme)

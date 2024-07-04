@@ -2,6 +2,7 @@ package com.adt.authservice.errorHandlingUtilities;
 
 
 import java.sql.SQLException;
+import java.sql.SQLTransientConnectionException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -158,6 +159,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 			ApiError errors = new ApiError(HttpStatus.UNAUTHORIZED, message, ex);
 			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(),
 					"Your email address has not been verified. Please check your inbox for a verification email",
+					errors.getTimestamp());
+			return new ResponseEntity<>(errorResponse, errors.getStatus());
+		}
+		
+		@ExceptionHandler(SQLTransientConnectionException.class)
+		public ResponseEntity<Object> handleSQLTransientConnectionException(SQLTransientConnectionException ex) {
+			String message = ex.getMessage();
+			ApiError errors = new ApiError(HttpStatus.BAD_GATEWAY, message, ex);
+			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(),
+					errors.getMessage(),
 					errors.getTimestamp());
 			return new ResponseEntity<>(errorResponse, errors.getStatus());
 		}
