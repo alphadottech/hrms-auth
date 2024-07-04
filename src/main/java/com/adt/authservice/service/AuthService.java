@@ -82,7 +82,7 @@ public class AuthService {
      *
      * @return A user object if successfully created
      */
-    public Optional<User> registerUser(RegistrationRequest newRegistrationRequest) {
+    public  Optional<User> registerUser(RegistrationRequest newRegistrationRequest) {
         validateRegistrationRequest(newRegistrationRequest);
         String newRegistrationRequestEmail = newRegistrationRequest.getEmail();
         if (emailAlreadyExists(newRegistrationRequestEmail)) {
@@ -93,11 +93,17 @@ public class AuthService {
             LOGGER.error("Password and confirm password do not match for email: " + newRegistrationRequestEmail);
             throw new IllegalArgumentException("Password and confirm password do not match");
         }
-        LOGGER.info("Trying to register new user [" + newRegistrationRequestEmail + "]");
+        LOGGER.info("Trying to register new user [" +  newRegistrationRequest.getFirstName()+ "]");
+        try {
         User newUser = userService.createUser(newRegistrationRequest);
         User registeredNewUser = userService.save(newUser);
         registeredNewUser.setPassword(UserService.originalPassword);
         return Optional.ofNullable(registeredNewUser);
+        }catch(Exception e){    	
+         LOGGER.error(e.getMessage());	
+        }
+        return null;
+       
     }
 
     private void validateRegistrationRequest(RegistrationRequest request) {

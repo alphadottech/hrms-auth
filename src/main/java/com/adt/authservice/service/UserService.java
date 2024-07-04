@@ -115,6 +115,7 @@ public class UserService {
 		newUser.setConfirmPassword(registerRequest.getConfirmPassword());
 		newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 		newUser.addRoles(getRolesForNewUser(true));
+		LOGGER.info("creation of adt id");
 		newUser.setAdtId(generateAdtId());
 //		newUser.addRoles(registerRequest.getRoles());
 		newUser.setActive(true);
@@ -167,7 +168,8 @@ public class UserService {
 		StringBuilder zeroPrefixBuilder = new StringBuilder();
 		zeroPrefixBuilder.append(prefix);
 	    int start=prefix.length() -apiId.length();
-	    String idAdt= zeroPrefixBuilder.replace(start, prefix.length(), apiId).toString();   
+	    String idAdt= zeroPrefixBuilder.replace(start, prefix.length(), apiId).toString(); 
+	    LOGGER.info("ADT_ID"+idAdt);
 	    return idAdt;
 	}
 }
