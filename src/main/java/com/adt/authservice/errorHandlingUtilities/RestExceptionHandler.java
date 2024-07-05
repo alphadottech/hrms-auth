@@ -10,6 +10,8 @@ import java.util.Map;
 
 import javax.validation.ConstraintViolationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.Ordered;
@@ -41,9 +43,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	    @Autowired
 	    private MessageSource messageSource;
 	    
+	    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+	    
 	    @ExceptionHandler(Exception.class)
 		public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
 			String error = ex.getMessage();
+			LOGGER.error(error);
 			ApiError errors = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, error, ex);
 			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(), errors.getMessage(),
 					errors.getTimestamp());
@@ -54,6 +59,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
 				HttpHeaders headers, HttpStatus status, WebRequest request) {
 			String error = "Malformed JSON request";
+			LOGGER.error(error);
 			return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, error, ex));
 		}
 
@@ -64,6 +70,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		// other exception handlers below
 		@ExceptionHandler(EntityNotFoundException.class)
 		protected ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex) {
+			LOGGER.error(ex.getMessage());
 			ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
 			apiError.setMessage(ex.getMessage());
 			return buildResponseEntity(apiError);
@@ -72,6 +79,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		@ExceptionHandler(AccessDeniedException.class)
 		public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex) {
 			String message = ex.getMessage();
+			LOGGER.error(message);
 			ApiError errors = new ApiError(HttpStatus.FORBIDDEN, message, ex);
 			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(), errors.getMessage(),
 					errors.getTimestamp());
@@ -81,6 +89,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		@ExceptionHandler({ NoSuchFieldException.class })
 		public ResponseEntity<?> handleNoSuchFieldException(NoSuchFieldException ex) {
 			String error = ex.getLocalizedMessage();
+			LOGGER.error(error);
 			ApiError errors = new ApiError(HttpStatus.NOT_FOUND, error, ex);
 			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(), errors.getMessage(),
 					errors.getTimestamp());
@@ -95,6 +104,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 			List<ObjectError> globalErrors = ex.getBindingResult().getGlobalErrors();
 
 			String message = messageSource.getMessage("api.error.validation", null, Locale.ENGLISH);
+			LOGGER.error(message);
 			for (FieldError fieldError : fieldErrors) {
 				errors.put(fieldError.getField(), fieldError.getDefaultMessage());
 			}
@@ -110,6 +120,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		@ExceptionHandler(ConstraintViolationException.class)
 		public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex) {
 			ApiError errors = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), ex);
+			LOGGER.error(errors.getMessage());
 			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(), errors.getMessage(),
 					errors.getTimestamp());
 			return new ResponseEntity<>(errorResponse, errors.getStatus());
@@ -118,6 +129,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		@ExceptionHandler(NullPointerException.class)
 		public ResponseEntity<Object> handleNullPointerException(NullPointerException ex) {
 			String message = ex.getLocalizedMessage();
+			LOGGER.error(message);
 			ApiError errors = new ApiError(HttpStatus.BAD_REQUEST, message, ex);
 			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(), errors.getMessage(),
 					errors.getTimestamp());
@@ -127,6 +139,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		@ExceptionHandler(SQLException.class)
 		public ResponseEntity<Object> handleSqlException(SQLException ex) {
 			String message = ex.getMessage();
+			LOGGER.error(message);
 			ApiError errors = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, message, ex);
 			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(), errors.getMessage(),
 					errors.getTimestamp());
@@ -137,6 +150,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		@ExceptionHandler(InvalidTokenRequestException.class)
 		public ResponseEntity<Object> handleAccessDeniedException(InvalidTokenRequestException ex) {
 			String message = ex.getMessage();
+			LOGGER.error(message);
 			ApiError errors = new ApiError(HttpStatus.UNAUTHORIZED, message, ex);
 			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(), "Your session has expired. Please log in again.",
 					errors.getTimestamp());
@@ -147,6 +161,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		@ExceptionHandler(BadCredentialsException.class)
 		public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex) {
 			String message = ex.getMessage();
+			LOGGER.error(message);
 			ApiError errors = new ApiError(HttpStatus.UNAUTHORIZED, message, ex);
 			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(), message,
 					errors.getTimestamp());
@@ -156,6 +171,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		@ExceptionHandler(LockedException.class)
 		public ResponseEntity<Object> handleLockedException(LockedException ex) {
 			String message = ex.getMessage();
+			LOGGER.error(message);
 			ApiError errors = new ApiError(HttpStatus.UNAUTHORIZED, message, ex);
 			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(),
 					"Your email address has not been verified. Please check your inbox for a verification email",
@@ -166,6 +182,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		@ExceptionHandler(SQLTransientConnectionException.class)
 		public ResponseEntity<Object> handleSQLTransientConnectionException(SQLTransientConnectionException ex) {
 			String message = ex.getMessage();
+			LOGGER.error(message);
 			ApiError errors = new ApiError(HttpStatus.BAD_GATEWAY, message, ex);
 			ErrorResponse errorResponse = new ErrorResponse(errors.getStatus().value(),
 					errors.getMessage(),
