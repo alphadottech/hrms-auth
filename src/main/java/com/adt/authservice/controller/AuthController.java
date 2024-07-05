@@ -228,6 +228,7 @@ public class AuthController {
 
 	@PostMapping("/password/reset")
 	public ResponseEntity resetPassword(@Valid @RequestBody PasswordResetRequest passwordResetRequest) {
+		LOGGER.info("passwordReset");
 		return authService.resetPassword(passwordResetRequest).map(changedUser -> {
 			OnUserAccountChangeEvent onPasswordChangeEvent = new OnUserAccountChangeEvent(changedUser, "Reset Password",
 					"Changed Successfully");
@@ -243,6 +244,7 @@ public class AuthController {
 	 */
 	@GetMapping("/registrationConfirmation")
 	public ResponseEntity<String> confirmRegistration(@RequestParam("token") String token) throws TemplateException, MessagingException, IOException {
+		LOGGER.info("registrationConfirmation");
 		Optional<User> optionalUser = authService.confirmEmailRegistration(token);
 		freemarkerConfig.setClassForTemplateLoading(getClass(), basePackagePath);
 		Template template = freemarkerConfig.getTemplate("message.ftl");
@@ -266,6 +268,7 @@ public class AuthController {
 	 */
 	@GetMapping("/resendRegistrationToken")
 	public ResponseEntity resendRegistrationToken(@RequestParam("token") String existingToken) {
+		LOGGER.info("resendRegistrationToken");
 		EmailVerificationToken newEmailToken = authService.recreateRegistrationToken(existingToken)
 				.orElseThrow(() -> new InvalidTokenRequestException("Email Verification Token", existingToken,
 						"User is already registered. No need to re-generate token"));
