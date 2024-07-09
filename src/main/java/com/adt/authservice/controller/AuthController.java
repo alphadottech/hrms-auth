@@ -182,13 +182,10 @@ public class AuthController {
 	@PreAuthorize("@auth.allow('REGISTER_USER')")
 	@PostMapping("/register")
 	public ResponseEntity registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
-		LOGGER.info("name" +registrationRequest.getFirstName());
+		LOGGER.info("name" + registrationRequest.getFirstName());
 		return authService.registerUser(registrationRequest).map(user -> {
-			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
-					.scheme(scheme)
-					.host(ipaddress)
-					.port(serverPort)
-					.path(context+"/api/auth/registrationConfirmation");
+			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance().scheme(scheme).host(ipaddress)
+					.port(serverPort).path(context + "/api/auth/registrationConfirmation");
 			OnUserRegistrationCompleteEvent onUserRegistrationCompleteEvent = new OnUserRegistrationCompleteEvent(user,
 					urlBuilder);
 			applicationEventPublisher.publishEvent(onUserRegistrationCompleteEvent);

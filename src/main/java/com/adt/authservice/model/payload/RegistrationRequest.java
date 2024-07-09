@@ -25,60 +25,65 @@ import lombok.Data;
 @Data
 public class RegistrationRequest {
 
-    @NotBlank(message = "FirstName cannot be null or blank")
-    private String firstName;
+	@NotBlank(message = "FirstName cannot be null or blank")
+	private String firstName;
 
-    private String middleName;
+	private String middleName;
 
-    @NotBlank(message = "LastName cannot be null or blank")
-    private String lastName;
+	@NotBlank(message = "LastName cannot be null or blank")
+	private String lastName;
 
-    @NotBlank(message = "Registration email can be null but not blank")
-    private String email;
+	@NotBlank(message = "Registration email can be null but not blank")
+	private String email;
 
-    @NotBlank(message = "Registration password cannot be null")
-    private String password;
+	@NotBlank(message = "Registration password cannot be null")
+	private String password;
 
-    @NotBlank(message = "Registration password cannot be null")
-    private String confirmPassword;
+	@NotBlank(message = "Registration password cannot be null")
+	private String confirmPassword;
 
-    public RegistrationRequest(@NotNull(message = "FirstName cannot be null")String firstName,
-                               String middleName,
-                               @NotNull(message = "LastName cannot be null")String lastName,
-                               String email,
-                               @NotNull(message = "Registration password cannot be null") String password,
-                               @NotNull(message = "Registration password cannot be null") String confirmPassword)
-    {
-        super();
-        this.firstName = firstName;
-        this.middleName=middleName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.confirmPassword = confirmPassword;
-    }
+	private String employeeType;
 
-    public RegistrationRequest() {
-    }
+	public RegistrationRequest(@NotNull(message = "FirstName cannot be null") String firstName, String middleName,
+			@NotNull(message = "LastName cannot be null") String lastName, String email,
+			@NotNull(message = "Registration password cannot be null") String password,
+			@NotNull(message = "Registration password cannot be null") String confirmPassword, String employeeType) {
 
+		super();
+		this.firstName = firstName;
+		this.middleName = middleName;
+		this.lastName = lastName;
+		this.email = email;
+		this.password = password;
+		this.confirmPassword = confirmPassword;
+		this.employeeType = employeeType;
+	}
 
+	public RegistrationRequest() {
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
+	public String getEmployeeType() {
+		return employeeType;
+	}
 
+	public void setEmployeeType(String employeeType) {
+		this.employeeType = employeeType;
+	}
 
 }

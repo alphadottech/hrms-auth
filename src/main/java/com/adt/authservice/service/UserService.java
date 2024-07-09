@@ -120,6 +120,7 @@ public class UserService {
 //		newUser.addRoles(registerRequest.getRoles());
 		newUser.setActive(true);
 		newUser.setEmailVerified(false);
+		newUser.setEmployeeType(registerRequest.getEmployeeType());
 		originalPassword=registerRequest.getPassword();
 		return newUser;
 	}
