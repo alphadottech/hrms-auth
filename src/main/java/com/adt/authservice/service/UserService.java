@@ -51,13 +51,14 @@ public class UserService {
 
 	@Autowired
 	public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, RoleService roleService,
-					   UserDeviceService userDeviceService, RefreshTokenService refreshTokenService) {
+			UserDeviceService userDeviceService, RefreshTokenService refreshTokenService) {
 		this.passwordEncoder = passwordEncoder;
 		this.userRepository = userRepository;
 		this.roleService = roleService;
 		this.userDeviceService = userDeviceService;
 		this.refreshTokenService = refreshTokenService;
 	}
+
 	static String originalPassword = null;
 
 	/**
@@ -121,7 +122,7 @@ public class UserService {
 		newUser.setActive(true);
 		newUser.setEmailVerified(false);
 		newUser.setEmployeeType(registerRequest.getEmployeeType());
-		originalPassword=registerRequest.getPassword();
+		originalPassword = registerRequest.getPassword();
 		return newUser;
 	}
 
@@ -144,19 +145,18 @@ public class UserService {
 	public void logoutUser(CustomUserDetails customUserDetails, LogOutRequest logOutRequest) {
 		String deviceId = logOutRequest.getDeviceInfo().getDeviceId();
 		List<UserDevice> userDeviceList = userDeviceService.findDeviceByUserId(customUserDetails.getId(), deviceId)
-				.stream()
-				.filter(device -> device.getDeviceId().equals(deviceId))
-				.collect(Collectors.toList());
+				.stream().filter(device -> device.getDeviceId().equals(deviceId)).collect(Collectors.toList());
 
-		Optional.of(userDeviceList).
-				orElseThrow(() -> new UserLogoutException(logOutRequest.getDeviceInfo().getDeviceId(),
+		Optional.of(userDeviceList)
+				.orElseThrow(() -> new UserLogoutException(logOutRequest.getDeviceInfo().getDeviceId(),
 						"Invalid device Id supplied. No matching device found for the given user "));
 
-		userDeviceList.forEach(userDevice->{
+		userDeviceList.forEach(userDevice -> {
 			LOGGER.info("Removing refresh token associated with device [" + userDevice + "]");
 			refreshTokenService.deleteById(userDevice.getRefreshToken().getId());
 		});
 	}
+
 	@Transactional
 	public synchronized String generateAdtId() {
 		String prefix = "ADT00000";
@@ -168,9 +168,9 @@ public class UserService {
 		}
 		StringBuilder zeroPrefixBuilder = new StringBuilder();
 		zeroPrefixBuilder.append(prefix);
-	    int start=prefix.length() -apiId.length();
-	    String idAdt= zeroPrefixBuilder.replace(start, prefix.length(), apiId).toString(); 
-	    LOGGER.info("ADT_ID"+idAdt);
-	    return idAdt;
+		int start = prefix.length() - apiId.length();
+		String idAdt = zeroPrefixBuilder.replace(start, prefix.length(), apiId).toString();
+		LOGGER.info("ADT_ID" + idAdt);
+		return idAdt;
 	}
 }
