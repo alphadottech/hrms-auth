@@ -108,7 +108,7 @@ public class AuthService {
 	private void validateRegistrationRequest(RegistrationRequest request) {
 		String[][] nameFields = { { request.getFirstName(), "First name" }, { request.getMiddleName(), "Middle name" },
 				{ request.getLastName(), "Last name" } };
-//, { request.getEmployeeType(), "EmployeeType" }
+
 		for (String[] field : nameFields) {
 			String name = field[0];
 			String fieldName = field[1];
@@ -128,10 +128,6 @@ public class AuthService {
 
 		if (!request.getEmail().matches(emailPattern)) {
 			throw new ValidationException("Email must be a valid email address");
-		}
-		if (request.getEmployeeType() == null || request.getEmployeeType().isEmpty()
-				|| request.getEmployeeType().isBlank() || request.getEmployeeType().equals("")) {
-			throw new ValidationException("EmployeeType cannot be Null or Blank");
 		}
 		if (!request.getPassword().matches(passwordPattern) || !request.getConfirmPassword().matches(passwordPattern)) {
 			throw new ValidationException(
