@@ -203,6 +203,7 @@ public class AuthController {
 	 */
 	@PostMapping("/password/resetlink")
 	public ResponseEntity resetLink(@Valid @RequestBody PasswordResetLinkRequest passwordResetLinkRequest) {
+		LOGGER.info("ResetPassword");
 		return authService.generatePasswordResetToken(passwordResetLinkRequest).map(passwordResetToken -> {
 			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
 					.scheme(scheme)
@@ -211,6 +212,7 @@ public class AuthController {
 					.path("/NewpassForm");
 			OnGenerateResetLinkEvent generateResetLinkMailEvent = new OnGenerateResetLinkEvent(passwordResetToken,
 					urlBuilder);
+			LOGGER.info("Reset Password is proccessing");
 			applicationEventPublisher.publishEvent(generateResetLinkMailEvent);
 			return ResponseEntity.ok(new ApiResponse(true, "Password reset link sent successfully"));
 		}).orElseThrow(() -> new PasswordResetLinkException(passwordResetLinkRequest.getEmail(),

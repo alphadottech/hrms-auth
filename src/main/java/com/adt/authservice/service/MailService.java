@@ -18,6 +18,9 @@ import com.adt.authservice.model.User;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -46,6 +49,8 @@ public class MailService {
 
     @Value("${app.token.password.reset.duration}")
     private Long expiration;
+    
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     public MailService(JavaMailSender mailSender, Configuration templateConfiguration) {
@@ -75,7 +80,9 @@ public class MailService {
      * Setting the mail parameters.Send the reset link to the respective user's mail
      */
     public void sendResetLink(String resetPasswordLink, String to)
-            throws IOException, TemplateException, MessagingException {
+            throws IOException, TemplateException, MessagingException {	
+    	LOGGER.info("send resetPasswordLink");
+    	try {
         Long expirationInMinutes = TimeUnit.MILLISECONDS.toMinutes(expiration);
         String expirationInMinutesString = expirationInMinutes.toString();
         Mail mail = new Mail();
@@ -91,6 +98,9 @@ public class MailService {
         String mailContent = FreeMarkerTemplateUtils.processTemplateIntoString(template, mail.getModel());
         mail.setContent(mailContent);
         send(mail);
+    	}catch(Exception e) {
+    		LOGGER.error("sendResetLink"+e.getMessage());
+    	}
     }
 
     /**
@@ -118,6 +128,8 @@ public class MailService {
      * Sends a simple mail as a MIME Multipart message
      */
     public void send(Mail mail) throws MessagingException {
+    	LOGGER.info("send mail"+mail);
+    	try {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
@@ -127,6 +139,9 @@ public class MailService {
         helper.setSubject(mail.getSubject());
         helper.setFrom(mail.getFrom());
         mailSender.send(message);
+    	}catch(Exception e) {
+    	LOGGER.error("send mail error" +e.getMessage());
+    	}
     }
 
 }

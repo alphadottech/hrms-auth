@@ -57,6 +57,7 @@ public class OnGenerateResetLinkEventListener implements ApplicationListener<OnG
 	 * Sends Reset Link to the mail address with a password reset link token
 	 */
 	private void sendResetLink(OnGenerateResetLinkEvent event) {
+		LOGGER.info("OnGenerateResetLinkEvent");
 		PasswordResetToken passwordResetToken = event.getPasswordResetToken();
 		User user = passwordResetToken.getUser();
 		String recipientAddress = user.getEmail();
@@ -65,7 +66,7 @@ public class OnGenerateResetLinkEventListener implements ApplicationListener<OnG
 		try {
 			mailService.sendResetLink(emailConfirmationUrl, recipientAddress);
 		} catch (IOException | TemplateException | MessagingException e) {
-			LOGGER.error("exception: {}", e);
+			LOGGER.error("OnGenerateResetLinkEvent exception"+ e.getMessage());
 			throw new MailSendException(recipientAddress, "Email Verification");
 		}
 	}
