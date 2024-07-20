@@ -1,7 +1,6 @@
 package com.adt.authservice.service;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -108,7 +107,7 @@ public class ApiDetailsService {
 	
 	
 	public ResponseEntity<?> getListOfApiNameByRole(String roleName) {
-		String sql = "SELECT ad.api_name FROM av_schema.api_details ad JOIN av_schema.api_mapping am ON ad.api_id = am.api_id JOIN user_schema.role r ON am.role_id = r.role_id WHERE r.role_name ="
+		String sql = "SELECT ad.service_name ,ad.api_name FROM av_schema.api_details ad JOIN av_schema.api_mapping am ON ad.api_id = am.api_id JOIN user_schema.role r ON am.role_id = r.role_id WHERE r.role_name ="
 				+ "'" + roleName + "'";
 		List<Map<String, Object>> apiDate = tableDataExtractor.extractDataFromTable(sql);
 		return new ResponseEntity<>(apiDate, HttpStatus.OK);
@@ -133,6 +132,45 @@ public class ApiDetailsService {
 
 		return roles;
 	}
+	
+	
+	
+	
+	public ResponseEntity<?> getApiNameByServiceName(List<Object> listOfApiNames, String serviceName) {
+		List<String> listOfApi = new ArrayList<>();
+		for (Object serviceN : listOfApiNames) {
+			String b = serviceN.toString();
+			String[] json = b.split("service_name");
+			for (String stringApi : json) {
+				if (stringApi.contains(serviceName)) {
+					String[] origen = stringApi.split("=");
+					String apiName = origen[2];
+					apiName = apiName.replace("{", "");
+					apiName = apiName.replace("}", "");
+					apiName = apiName.replace(",", "");
+					listOfApi.add(apiName);
+
+				}
+
+			}
+
+		}
+
+		return new ResponseEntity<>(listOfApi, HttpStatus.OK);
+	}
+	 
+
+	public ResponseEntity<?> getAllServiceName(){
+		String sql ="select DISTINCT( service_name)  from  av_schema.api_details";
+		List<String> listOfServiceName=new ArrayList<>();
+		List<Map<String, Object>> returnApiNames = tableDataExtractor.extractDataFromTable(sql);
+		for(Map<String, Object> serviceDetails : returnApiNames ) {
+			String serviceName =String.valueOf(serviceDetails.get("service_name"));
+			listOfServiceName.add(serviceName);
+		}
+		return new ResponseEntity<>(listOfServiceName, HttpStatus.OK);
+	}
+	
 	
 	
 }

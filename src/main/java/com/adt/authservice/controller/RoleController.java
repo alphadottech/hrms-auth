@@ -134,7 +134,18 @@ public class RoleController {
    		return new ResponseEntity<>(apiDetailsService.addAndUpdateRoleMapping(apiname,roleName), HttpStatus.OK);
    		
    	}
-       
+    @PreAuthorize("@auth.allow('GET_ALL_SERVICE_NAME')")
+    @GetMapping("/getAllServiceName")
+    public ResponseEntity<?> getAllServiceName(){
+    	return new ResponseEntity<>(apiDetailsService.getAllServiceName(), HttpStatus.OK);
+    }
+    
+    @PreAuthorize("@auth.allow('GET_ALL_API_NAME_BY_SERVICE_NAME')")
+    @GetMapping("/getApiNameByServiceName")
+    public ResponseEntity<?> getApiNameByServiceName(@RequestBody List<Object> listOfApiNames,@RequestParam("serviceName") String serviceName){
+    	return new ResponseEntity<>(apiDetailsService.getApiNameByServiceName(listOfApiNames,serviceName), HttpStatus.OK);
+    }
 
 	
+   
 }
