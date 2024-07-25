@@ -141,7 +141,7 @@ public class RoleController {
     }
     
     @PreAuthorize("@auth.allow('GET_ALL_API_NAME_BY_SERVICE_NAME')")
-    @GetMapping("/getApiNameByServiceName")
+    @PostMapping("/getApiNameByServiceName")
     public ResponseEntity<?> getApiNameByServiceName(@RequestBody List<Object> listOfApiNames,@RequestParam("serviceName") String serviceName){
     	return new ResponseEntity<>(apiDetailsService.getApiNameByServiceName(listOfApiNames,serviceName), HttpStatus.OK);
     }
