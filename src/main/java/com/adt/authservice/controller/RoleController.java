@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
@@ -35,11 +37,14 @@ public class RoleController {
 	@Autowired
 	public ApiDetailsService apiDetailsService;
 	
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+	
 	@PreAuthorize("@auth.allow('GET_ALL_ROLE')")
 	@GetMapping("/getAllRoles")
 	public ResponseEntity<Page<Role>> getAllRoles(
 			@RequestParam(value = "page", defaultValue = "0", required = false) int page,
 			@RequestParam(value = "size", defaultValue = "10", required = false) int size) {
+		LOGGER.info("getAllRoles");
 		return new ResponseEntity<Page<Role>>(roleService.findAll(page, size), HttpStatus.OK);
 	}
     @PreAuthorize("@auth.allow('CREATE_ROLE')")
@@ -129,7 +134,18 @@ public class RoleController {
    		return new ResponseEntity<>(apiDetailsService.addAndUpdateRoleMapping(apiname,roleName), HttpStatus.OK);
    		
    	}
-       
+    @PreAuthorize("@auth.allow('GET_ALL_SERVICE_NAME')")
+    @GetMapping("/getAllServiceName")
+    public ResponseEntity<?> getAllServiceName(){
+    	return new ResponseEntity<>(apiDetailsService.getAllServiceName(), HttpStatus.OK);
+    }
+    
+    @PreAuthorize("@auth.allow('GET_ALL_API_NAME_BY_SERVICE_NAME')")
+    @GetMapping("/getApiNameByServiceName")
+    public ResponseEntity<?> getApiNameByServiceName(@RequestBody List<Object> listOfApiNames,@RequestParam("serviceName") String serviceName){
+    	return new ResponseEntity<>(apiDetailsService.getApiNameByServiceName(listOfApiNames,serviceName), HttpStatus.OK);
+    }
 
 	
+   
 }

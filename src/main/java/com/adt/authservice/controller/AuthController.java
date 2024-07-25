@@ -182,12 +182,10 @@ public class AuthController {
 	@PreAuthorize("@auth.allow('REGISTER_USER')")
 	@PostMapping("/register")
 	public ResponseEntity registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
+		LOGGER.info("name" + registrationRequest.getFirstName());
 		return authService.registerUser(registrationRequest).map(user -> {
-			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
-					.scheme(scheme)
-					.host(ipaddress)
-					.port(serverPort)
-					.path(context+"/api/auth/registrationConfirmation");
+			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance().scheme(scheme).host(ipaddress)
+					.port(serverPort).path(context + "/api/auth/registrationConfirmation");
 			OnUserRegistrationCompleteEvent onUserRegistrationCompleteEvent = new OnUserRegistrationCompleteEvent(user,
 					urlBuilder);
 			applicationEventPublisher.publishEvent(onUserRegistrationCompleteEvent);
@@ -205,6 +203,7 @@ public class AuthController {
 	 */
 	@PostMapping("/password/resetlink")
 	public ResponseEntity resetLink(@Valid @RequestBody PasswordResetLinkRequest passwordResetLinkRequest) {
+		LOGGER.info("ResetPassword");
 		return authService.generatePasswordResetToken(passwordResetLinkRequest).map(passwordResetToken -> {
 			UriComponentsBuilder urlBuilder = ServletUriComponentsBuilder.newInstance()
 					.scheme(scheme)
@@ -213,6 +212,7 @@ public class AuthController {
 					.path("/NewpassForm");
 			OnGenerateResetLinkEvent generateResetLinkMailEvent = new OnGenerateResetLinkEvent(passwordResetToken,
 					urlBuilder);
+			LOGGER.info("Reset Password is proccessing");
 			applicationEventPublisher.publishEvent(generateResetLinkMailEvent);
 			return ResponseEntity.ok(new ApiResponse(true, "Password reset link sent successfully"));
 		}).orElseThrow(() -> new PasswordResetLinkException(passwordResetLinkRequest.getEmail(),
@@ -227,6 +227,7 @@ public class AuthController {
 
 	@PostMapping("/password/reset")
 	public ResponseEntity resetPassword(@Valid @RequestBody PasswordResetRequest passwordResetRequest) {
+		LOGGER.info("passwordReset");
 		return authService.resetPassword(passwordResetRequest).map(changedUser -> {
 			OnUserAccountChangeEvent onPasswordChangeEvent = new OnUserAccountChangeEvent(changedUser, "Reset Password",
 					"Changed Successfully");
@@ -242,6 +243,7 @@ public class AuthController {
 	 */
 	@GetMapping("/registrationConfirmation")
 	public ResponseEntity<String> confirmRegistration(@RequestParam("token") String token) throws TemplateException, MessagingException, IOException {
+		LOGGER.info("registrationConfirmation");
 		Optional<User> optionalUser = authService.confirmEmailRegistration(token);
 		freemarkerConfig.setClassForTemplateLoading(getClass(), basePackagePath);
 		Template template = freemarkerConfig.getTemplate("message.ftl");
@@ -265,6 +267,7 @@ public class AuthController {
 	 */
 	@GetMapping("/resendRegistrationToken")
 	public ResponseEntity resendRegistrationToken(@RequestParam("token") String existingToken) {
+		LOGGER.info("resendRegistrationToken");
 		EmailVerificationToken newEmailToken = authService.recreateRegistrationToken(existingToken)
 				.orElseThrow(() -> new InvalidTokenRequestException("Email Verification Token", existingToken,
 						"User is already registered. No need to re-generate token"));

@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +44,8 @@ public class RoleService {
     
     private static final int MAX_PAGE_SIZE = 50;
     private static final int DEFAULT_PAGE_SIZE = 10;
+    
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     public RoleService(RoleRepository roleRepository) {
@@ -72,6 +76,7 @@ public class RoleService {
 			String role1 = role.getRole();
 			role.setRole("ROLE_" + role1);
 		}
+		LOGGER.info(role.getRole());
 		String sql="select * from user_schema.role  where role_name="+"'"+role.getRole()+"'";
 		List<Map<String, Object>> roleDate = tableDataExtractor.extractDataFromTable(sql);
 		if(roleDate==null||roleDate.isEmpty()) {
@@ -88,6 +93,7 @@ public class RoleService {
 			String role1 = role.getRole();
 			role.setRole("ROLE_" + role1);
 		}
+		LOGGER.info(role.getRole());
 		try {
 			Optional<Role> updateRole = roleRepository.findById(role.getId());
 			Optional<Role> roleinfo = roleRepository.findByRoleName(role.getRole());
@@ -113,6 +119,7 @@ public class RoleService {
 
 	public String deleteRole(Long roleId) {	
 		Optional<Role> role = roleRepository.findById(roleId);
+		LOGGER.info("roleId"+roleId);
 		if (role.isPresent()) {
 			String sql = "select * from user_schema.user_authority where role_id=" + roleId;
 			List<Map<String, Object>> tableData = tableDataExtractor.extractDataFromTable(sql);
@@ -141,6 +148,7 @@ public class RoleService {
 	}
 	
 	public String updateRoleOfemployee(Long employeeId, List<String> listOfRoleName) {
+		LOGGER.info("role name"+listOfRoleName);
 		String sql3 = " SELECT r.role_name FROM user_schema.role r JOIN user_schema.user_authority ua ON r.role_id = ua.role_id WHERE r.default_role = false AND ua.employee_id = "
 				+ employeeId + "";
 		List<Map<String, Object>> tableData1 = tableDataExtractor.extractDataFromTable(sql3);
@@ -174,6 +182,7 @@ public class RoleService {
 	}
 	
 	public String deleteRoleAssociatedByEmployee(Long employeeId,String roleName) {
+		LOGGER.info("roleName"+roleName);
 		String sql = "SELECT ua.* FROM user_schema.user_authority ua JOIN user_schema.role r ON ua.role_id = r.role_id WHERE ua.employee_id ="
 				+ employeeId +" AND r.role_name =" + "'" + roleName + "'";
 		List<Map<String, Object>> tableData = tableDataExtractor.extractDataFromTable(sql);

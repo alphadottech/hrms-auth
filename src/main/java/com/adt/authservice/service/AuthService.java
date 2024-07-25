@@ -82,55 +82,58 @@ public class AuthService {
      *
      * @return A user object if successfully created
      */
-    public Optional<User> registerUser(RegistrationRequest newRegistrationRequest) {
-        validateRegistrationRequest(newRegistrationRequest);
-        String newRegistrationRequestEmail = newRegistrationRequest.getEmail();
-        if (emailAlreadyExists(newRegistrationRequestEmail)) {
-            LOGGER.error("Email already exists: " + newRegistrationRequestEmail);
-            throw new ResourceAlreadyInUseException("Email", "Address", newRegistrationRequestEmail);
-        }
-        if (!newRegistrationRequest.getPassword().equals(newRegistrationRequest.getConfirmPassword())) {
-            LOGGER.error("Password and confirm password do not match for email: " + newRegistrationRequestEmail);
-            throw new IllegalArgumentException("Password and confirm password do not match");
-        }
-        LOGGER.info("Trying to register new user [" + newRegistrationRequestEmail + "]");
-        User newUser = userService.createUser(newRegistrationRequest);
-        User registeredNewUser = userService.save(newUser);
-        registeredNewUser.setPassword(UserService.originalPassword);
-        return Optional.ofNullable(registeredNewUser);
-    }
+	public Optional<User> registerUser(RegistrationRequest newRegistrationRequest) {
+		validateRegistrationRequest(newRegistrationRequest);
+		String newRegistrationRequestEmail = newRegistrationRequest.getEmail();
+		if (emailAlreadyExists(newRegistrationRequestEmail)) {
+			LOGGER.error("Email already exists: " + newRegistrationRequestEmail);
+			throw new ResourceAlreadyInUseException("Email", "Address", newRegistrationRequestEmail);
+		}
+		if (!newRegistrationRequest.getPassword().equals(newRegistrationRequest.getConfirmPassword())) {
+			LOGGER.error("Password and confirm password do not match for email: " + newRegistrationRequestEmail);
+			throw new IllegalArgumentException("Password and confirm password do not match");
+		}
+		LOGGER.info("Trying to register new user [" + newRegistrationRequest.getFirstName() + "]");
+		try {
+			User newUser = userService.createUser(newRegistrationRequest);
+			User registeredNewUser = userService.save(newUser);
+			registeredNewUser.setPassword(UserService.originalPassword);
+			return Optional.ofNullable(registeredNewUser);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+		return null;
+	}
 
-    private void validateRegistrationRequest(RegistrationRequest request) {
-        String[][] nameFields = {
-                {request.getFirstName(), "First name"},
-                {request.getMiddleName(), "Middle name"},
-                {request.getLastName(), "Last name"}
-        };
+	private void validateRegistrationRequest(RegistrationRequest request) {
+		String[][] nameFields = { { request.getFirstName(), "First name" }, { request.getMiddleName(), "Middle name" },
+				{ request.getLastName(), "Last name" } };
 
-        for (String[] field : nameFields) {
-            String name = field[0];
-            String fieldName = field[1];
+		for (String[] field : nameFields) {
+			String name = field[0];
+			String fieldName = field[1];
 
-            if (name != null) {
-                if (name.length() > 30) {
-                    throw new ValidationException(fieldName + " must be at most 30 characters long");
-                }
-                if (!name.matches("^[a-zA-Z]*$")) {
-                    throw new ValidationException(fieldName + " must contain only letters");
-                }
-            }
-        }
+			if (name != null) {
+				if (name.length() > 30) {
+					throw new ValidationException(fieldName + " must be at most 30 characters long");
+				}
+				if (!name.matches("^[a-zA-Z]*$")) {
+					throw new ValidationException(fieldName + " must contain only letters");
+				}
+			}
+		}
 
-        String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
-        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).+$";
+		String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
+		String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).+$";
 
-        if (!request.getEmail().matches(emailPattern)) {
-            throw new ValidationException("Email must be a valid email address");
-        }
-        if (!request.getPassword().matches(passwordPattern) || !request.getConfirmPassword().matches(passwordPattern)) {
-            throw new ValidationException("Password and Confirm Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character");
-        }
-    }
+		if (!request.getEmail().matches(emailPattern)) {
+			throw new ValidationException("Email must be a valid email address");
+		}
+		if (!request.getPassword().matches(passwordPattern) || !request.getConfirmPassword().matches(passwordPattern)) {
+			throw new ValidationException(
+					"Password and Confirm Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character");
+		}
+	}
     /**
      * Checks if the given email already exists in the database repository or not
      *
@@ -284,6 +287,7 @@ public class AuthService {
      */
     public Optional<PasswordResetToken> generatePasswordResetToken(PasswordResetLinkRequest passwordResetLinkRequest) {
         String email = passwordResetLinkRequest.getEmail();
+        LOGGER.info("ResetEmail="+email);
         return userService.findByEmail(email)
                 .map(passwordResetService::createToken)
                 .orElseThrow(() -> new PasswordResetLinkException(email, "No matching user found for the given request"));

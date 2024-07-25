@@ -30,35 +30,38 @@ public class User extends DateAudit implements UserDetails {
 
 	@NaturalId
 	@Column(name = "EMAIL", unique = true)
-	@NotBlank(message = "User email cannot be null")
+	@NotBlank(message = "User email cannot be Null")
 	private String email;
 
 	@Column(name = "USERNAME", unique = true)
-	@NullOrNotBlank(message = "Username can not be blank")
+	@NullOrNotBlank(message = "Username can not be Blank")
 	private String username;
 
 	@Column(name = "PASSWORD")
-	@NotNull(message = "Password cannot be null")
+	@NotNull(message = "Password cannot be Null")
 	private String password;
 
 	@Column(name = "FIRST_NAME")
-	@NullOrNotBlank(message = "First name can not be blank")
+	@NullOrNotBlank(message = "First name can not be Blank")
 	private String firstName;
 
 	@Column(name = "LAST_NAME")
-	@NullOrNotBlank(message = "Last name can not be blank")
+	@NullOrNotBlank(message = "Last name can not be Blank")
 	private String lastName;
 
 	@Column(name = "IS_ACTIVE", nullable = false)
 	private Boolean active;
-	
-	@Column(name = "ADT_ID",nullable = false,unique = true)
+
+	@Column(name = "ADT_ID", nullable = false, unique = true)
 	private String adtId;
+
+	@Column(name = "employee_type")
+	private String employeeType;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
 	@JoinTable(name = "USER_AUTHORITY", schema = "user_schema", joinColumns = {
 			@JoinColumn(name = "EMPLOYEE_ID", referencedColumnName = "EMPLOYEE_ID") }, inverseJoinColumns = {
-			@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID") })
+					@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID") })
 	private Set<Role> roles = new HashSet<>();
 
 	@Column(name = "IS_EMAIL_VERIFIED", nullable = false)
@@ -72,6 +75,14 @@ public class User extends DateAudit implements UserDetails {
 
 	@Transient
 	private String message;
+
+	public String getEmployeeType() {
+		return employeeType;
+	}
+
+	public void setEmployeeType(String employeeType) {
+		this.employeeType = employeeType;
+	}
 
 	public User() {
 		super();
@@ -90,8 +101,9 @@ public class User extends DateAudit implements UserDetails {
 			active = user.getActive();
 			roles = user.getRoles();
 			isEmailVerified = user.getEmailVerified();
-			adtId=user.getAdtId();
-			
+			adtId = user.getAdtId();
+			employeeType = user.getEmployeeType();
+
 		}
 	}
 
@@ -209,8 +221,6 @@ public class User extends DateAudit implements UserDetails {
 		this.message = message;
 	}
 
-	
-	
 	public String getAdtId() {
 		return adtId;
 	}
@@ -219,19 +229,26 @@ public class User extends DateAudit implements UserDetails {
 		this.adtId = adtId;
 	}
 
-	
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", email=" + email + ", username=" + username + ", password=" + password
-				+ ", firstName=" + firstName + ", lastName=" + lastName + ", active=" + active + ", adtId=" + adtId
-				+ ", roles=" + roles + ", isEmailVerified=" + isEmailVerified + ", middleName=" + middleName
-				+ ", confirmPassword=" + confirmPassword + ", message=" + message + "]";
-	}
+//	@Override
+//	public String toString() {
+//		return "User [id=" + id + ", email=" + email + ", username=" + username + ", password=" + password
+//				+ ", firstName=" + firstName + ", lastName=" + lastName + ", active=" + active + ", adtId=" + adtId
+//				+ ", roles=" + roles + ", isEmailVerified=" + isEmailVerified + ", middleName=" + middleName
+//				+ ", confirmPassword=" + confirmPassword + ", message=" + message + "]";
+//	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", email=" + email + ", username=" + username + ", password=" + password
+				+ ", firstName=" + firstName + ", lastName=" + lastName + ", active=" + active + ", adtId=" + adtId
+				+ ", employeeType=" + employeeType + ", roles=" + roles + ", isEmailVerified=" + isEmailVerified
+				+ ", middleName=" + middleName + ", confirmPassword=" + confirmPassword + ", message=" + message + "]";
 	}
 
 	@Override
